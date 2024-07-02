@@ -34,27 +34,9 @@ func _on_child_exiting_tree(node : Node) -> void:
 		elif node is BaseRouter:
 			producers.erase(node)
 
+func _ready() -> void:
+	update()
+
 func update() -> void:
-	var nodes_to_update : Array[BaseFluidNode] = producers.duplicate()
-
-	while nodes_to_update.size() != 0:
-		var current : BaseFluidNode = nodes_to_update.pop_back()
-		if is_zero_approx(current.current_flow_rate):
-			continue
-
-		var connections := current.connections
-		var total_flow_rate := 0.0
-		var is_current_producer := current is BaseProducer
-		for connection in connections:
-			var connected_node := connection.get_connecting_node(current)
-			if connected_node is BaseProducer:
-				if is_current_producer:
-					connection.max_flow_rate = 0.0
-				else:
-					connection.max_flow_rate = -connected_node.production_rate
-					connection.set_relative_flow_rate(-connected_node.production_rate)
-			elif connected_node is BaseConsumer:
-				connection.max_flow_rate = connected_node.consumption_rate
-
-			total_flow_rate += max(0, -connection.get_relative_flow_rate(current))
-		
+	for producer in producers:
+		producer.queue_update()
