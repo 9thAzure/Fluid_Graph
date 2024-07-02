@@ -44,7 +44,7 @@ func queue_update() -> void:
 	if not is_queued:
 		return # this means the method was called already during the delay time.
 	is_queued = false
-	_update()
+	update()
 
 # functions have to be sorted first input, then output
 #   input: ingoing flow rate (- relative flow)
@@ -79,8 +79,11 @@ func sort_connections() -> void:
 			return
 	connections_input_output_divider = connections.size()
 
-func _update() -> void:
+func update() -> void:
 	is_queued = false
+	_update()
+
+func _update() -> void:
 	sort_connections()
 
 	var flow_rate := 0.0
@@ -108,7 +111,6 @@ func _update() -> void:
 		connection.get_connecting_node(self).queue_update()
 	
 	extra_flow_rate = flow_rate
-	# extra_flow_rate = outflowing_rate
 	if is_zero_approx(extra_flow_rate):
 		return
 	
@@ -133,15 +135,3 @@ func _handle_backflow() -> void:
 		connection.flow_friction = pressure * friction_multiplier
 		connection.set_relative_flow_rate(self, -(pressure - connection.flow_friction))
 		connection.get_connecting_node(self).queue_update()
-
-func _get_ingoing_flow_rate() -> float:
-	var total := 0.0
-	for connection in connections:
-		total += max(0, -connection.get_relative_flow_rate(self))
-	return total
-
-func set_max_flow_rate() -> void:
-	for connection in connections:
-		var connected_node := connection.get_connecting_node(self)
-		if connected_node is BaseConsumer:
-			connection.set_relative_max_flow_rate(self, connected_node.consumption_rate)

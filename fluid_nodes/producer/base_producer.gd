@@ -12,8 +12,6 @@ func _init() -> void:
 	self_modulate = Color.CYAN
 
 func _update() -> void:
-	is_queued = false
-	# connections.sort_custom(func(a: FluidConnection, b: FluidConnection) -> bool: return a.flow_friction > b.flow_friction)
 	sort_connections()
 
 	var flow_rate := production_rate
@@ -43,7 +41,6 @@ func _update() -> void:
 		connection.get_connecting_node(self).queue_update()
 	
 	extra_flow_rate = flow_rate
-	# extra_flow_rate = outflowing_rate
 	if is_zero_approx(extra_flow_rate):
 		return
 	

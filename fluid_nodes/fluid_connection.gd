@@ -47,20 +47,5 @@ func set_relative_flow_rate(source_node : BaseFluidNode, value : float) -> void:
 	assert(is_same(source_node, node2))
 	flow_rate = -value
 
-# func get_relative_max_flow_rate(source_node : BaseFluidNode) -> float:
-# 	if is_same(source_node, node1):
-# 		return max_flow_rate
-	
-# 	assert(is_same(source_node, node2))
-# 	return -max_flow_rate
-
-# func set_relative_max_flow_rate(source_node : BaseFluidNode, value : float) -> void:
-# 	if is_same(source_node, node1):
-# 		max_flow_rate = value
-# 		return
-	
-# 	assert(is_same(source_node, node2))
-# 	max_flow_rate = -value
-
 func _draw() -> void:
 	draw_multiline_colors([node1.position, node2,position], [node1.self_modulate, node2.self_modulate], 3)
