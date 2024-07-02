@@ -82,36 +82,34 @@ func sort_connections() -> void:
 func _update() -> void:
 	is_queued = false
 	sort_connections()
-	var inflowing_connections : Array[FluidConnection] = []
-	var outflowing_connections : Array[FluidConnection] = []
-	var inflowing_rate := 0.0
-	for connection in connections:
-		var rate := connection.get_relative_flow_rate(self)
-		if rate < 0:
-			inflowing_rate += -rate
-			inflowing_connections.append(connection)
-		else:
-			outflowing_connections.append(connection)
 
-	outflowing_connections.sort_custom(func(a : FluidConnection, b : FluidConnection): return a.flow_friction > b.flow_friction)
-
-	var outflowing_rate := inflowing_rate
-	if outflowing_rate == 0.0:
-		return
-
-	var array_size := outflowing_connections.size()
-	for i in array_size:
+	var flow_rate := 0.0
+	for i in connections.size():
 		var connection := connections[i]
-		var sub_outflowing_rate := outflowing_rate / (array_size - i)
-		sub_outflowing_rate -= connection.flow_friction
+		var split_flow_rate := flow_rate / (size - i)
+		if i >= connections_input_output_divider:
+			split_flow_rate -= connection.flow_friction
+			connection.set_relative_flow_rate(self, split_flow_rate)
+			flow_rate -= split_flow_rate
+			connection.get_connecting_node(self).queue_update()
+			continue
 
-		connection.set_relative_flow_rate(self, sub_outflowing_rate)
-		outflowing_rate -= sub_outflowing_rate
+		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
+		var ingoing_pressure := ingoing_flow_rate + connection.flow_friction
+		if ingoing_pressure >= split_flow_rate: # inflowing flows are negative
+			flow_rate += ingoing_flow_rate 
+			continue
 		
+		# ingoing flow that is less thant split_flow_rate
+		split_flow_rate -= ingoing_pressure
+		connection.flow_friction = ingoing_pressure
+		connection.set_relative_flow_rate(self, split_flow_rate)
+		flow_rate -= split_flow_rate
 		connection.get_connecting_node(self).queue_update()
 	
-	extra_flow_rate = outflowing_rate
-	if is_zero_approx(outflowing_rate):
+	extra_flow_rate = flow_rate
+	# extra_flow_rate = outflowing_rate
+	if is_zero_approx(extra_flow_rate):
 		return
 	
 	handle_backflow()
