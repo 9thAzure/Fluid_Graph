@@ -112,9 +112,9 @@ func _update() -> void:
 	if is_zero_approx(extra_flow_rate):
 		return
 	
-	handle_backflow()
+	_handle_backflow()
 	
-func handle_backflow() -> void:
+func _handle_backflow() -> void:
 	# to handle backflow, input sources have to be capped
 	# 2 options as I see it, we stop flow of a pipe one by one or slow down all of them. Going with the second option
 	var inflowing_pressure := 0.0
