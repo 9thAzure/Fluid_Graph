@@ -20,6 +20,8 @@ func _draw() -> void:
 @export
 var connections : Array[FluidConnection] = []
 
+var connections_input_output_divider := -1
+
 var previous_position := position
 func _process(_delta) -> void:
 	if position.is_equal_approx(previous_position):
@@ -44,9 +46,42 @@ func queue_update() -> void:
 	is_queued = false
 	_update()
 
+# functions have to be sorted first input, then output
+#   input: ingoing flow rate (- relative flow)
+#     - has to further be sorted from largest relative flow rate to smallest relative flow rate
+#  output: other flow rate
+#     - further sorted from largest friction to smallest
+
+# if true, a and b is sorted
+func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bool:
+	var flow_rate_a := a.get_relative_flow_rate(self)
+	var flow_rate_b := b.get_relative_flow_rate(self)
+
+	var a_is_input := flow_rate_a < 0
+	var b_is_input := flow_rate_b < 0
+
+	if a_is_input and not b_is_input:
+		return true
+	if b_is_input and not a_is_input:
+		return false
+	
+	if a_is_input and b_is_input:
+		return flow_rate_a < flow_rate_b # ingoing flow rates are negative, so in actuality, checking that flow_rate_a is greater
+	
+	# both a and b are not input connections
+	return a.flow_friction > b.flow_friction
+
+func sort_connections() -> void:
+	connections.sort_custom(_custom_connection_comparer)
+	for i in connections.size():
+		if connections[i].get_relative_flow_rate(self) >= 0.0:
+			connections_input_output_divider = i
+			return
+	connections_input_output_divider = connections.size()
+
 func _update() -> void:
 	is_queued = false
-	# var inflowing_rate := _get_ingoing_flow_rate()
+	sort_connections()
 	var inflowing_connections : Array[FluidConnection] = []
 	var outflowing_connections : Array[FluidConnection] = []
 	var inflowing_rate := 0.0
@@ -72,12 +107,6 @@ func _update() -> void:
 
 		connection.set_relative_flow_rate(self, sub_outflowing_rate)
 		outflowing_rate -= sub_outflowing_rate
-		# if sub_outflowing_rate < connection.max_flow_rate:
-		# 	connection.set_relative_flow_rate(self, sub_outflowing_rate)
-		# 	outflowing_rate -= sub_outflowing_rate
-		# else:
-		# 	connection.set_relative_flow_rate(self, connection.max_flow_rate)
-		# 	outflowing_rate -= connection.max_flow_rate
 		
 		connection.get_connecting_node(self).queue_update()
 	
