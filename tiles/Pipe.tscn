@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://btogwtmpyqd1f"]
+
+[ext_resource type="Script" path="res://addons/complex_shape_creation/simple_polygon_2d/simple_polygon_2d.gd" id="1_hh0cp"]
+[ext_resource type="Script" path="res://addons/complex_shape_creation/regular_polygon_2d/regular_polygon_2d.gd" id="2_vc4nt"]
+
+[node name="Pipe" type="Node2D"]
+scale = Vector2(1, 1.143)
+
+[node name="SimplePolygon2D" type="Node2D" parent="."]
+script = ExtResource("1_hh0cp")
+vertices_count = 4
+color = Color(0.635294, 0.635294, 0.635294, 1)
+
+[node name="RegularPolygon2D" type="Polygon2D" parent="."]
+position = Vector2(-6.47, 0)
+color = Color(0.243137, 0.0862745, 1, 1)
+script = ExtResource("2_vc4nt")
+vertices_count = 2
+size = 7.09
+width = 1.2
+
+[node name="RegularPolygon2D2" type="Polygon2D" parent="."]
+position = Vector2(6.47, 0)
+color = Color(0.243137, 0.0862745, 1, 1)
+script = ExtResource("2_vc4nt")
+vertices_count = 2
+size = 7.09
+width = 1.2

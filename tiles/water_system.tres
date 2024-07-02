@@ -1,0 +1,11 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://ct36im015dbx0"]
+
+[ext_resource type="Texture2D" uid="uid://cglyso7n0abeb" path="res://pixilart-drawing.png" id="1_ebiqr"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nu04a"]
+texture = ExtResource("1_ebiqr")
+use_texture_padding = false
+0:0/0 = 0
+
+[resource]
+sources/0 = SubResource("TileSetAtlasSource_nu04a")
