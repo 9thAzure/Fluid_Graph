@@ -1,6 +1,8 @@
+@tool
 extends Node2D
 class_name FluidConnection
 
+@export
 var node1 : BaseFluidNode = null:
 	set(value):
 		if node1 != null:
@@ -8,7 +10,9 @@ var node1 : BaseFluidNode = null:
 		if value != null:
 			value.connections.append(self)
 		node1 = value
-		
+		queue_redraw()
+
+@export
 var node2 : BaseFluidNode = null:
 	set(value):
 		if node2 != null:
@@ -16,6 +20,7 @@ var node2 : BaseFluidNode = null:
 		if value != null:
 			value.connections.append(self)
 		node2 = value
+		queue_redraw()
 
 # from node1 to node2, negative values indicate flows from node2 to node1.
 var flow_rate := 0.0
@@ -48,4 +53,7 @@ func set_relative_flow_rate(source_node : BaseFluidNode, value : float) -> void:
 	flow_rate = -value
 
 func _draw() -> void:
-	draw_multiline_colors([node1.position, node2,position], [node1.self_modulate, node2.self_modulate], 3)
+	if not is_complete():
+		return
+
+	draw_polyline_colors([node1.position, node2.position], [node1.self_modulate, node2.self_modulate], 3, true)

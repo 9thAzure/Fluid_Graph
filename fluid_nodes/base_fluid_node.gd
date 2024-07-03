@@ -12,10 +12,10 @@ var size := 10.0:
 
 func _draw() -> void:
 	draw_circle(Vector2.ZERO, size, Color.WHITE)
-	for node in connections:
-		if node == null:
-			continue
-		draw_line(Vector2.ZERO, node.global_position - global_position, Color(1, 1, 1, 0.5), 1)
+	# for node in connections:
+	# 	if node == null:
+	# 		continue
+	# 	draw_line(Vector2.ZERO, node.global_position - global_position, Color(1, 1, 1, 0.5), 1)
 
 @export
 var connections : Array[FluidConnection] = []
