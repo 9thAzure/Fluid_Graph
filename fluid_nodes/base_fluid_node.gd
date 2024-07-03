@@ -110,10 +110,12 @@ func _update() -> void:
 		connection.get_connecting_node(self).queue_update()
 	
 	extra_flow_rate = flow_rate
-	if is_zero_approx(extra_flow_rate):
+	if not is_zero_approx(extra_flow_rate):
+		_handle_backflow()
 		return
 	
-	_handle_backflow()
+	if is_zero_approx(connections[-1].flow_friction):
+		_request_more_flow()
 	
 func _handle_backflow() -> void:
 	# to handle backflow, input sources have to be capped
@@ -133,4 +135,13 @@ func _handle_backflow() -> void:
 		var pressure := absf(connection.flow_rate) + connection.flow_friction
 		connection.flow_friction = pressure * friction_multiplier
 		connection.set_relative_flow_rate(self, -(pressure - connection.flow_friction))
+		connection.get_connecting_node(self).queue_update()
+
+func _request_more_flow() -> void:
+	for i in connections_input_output_divider:
+		var connection := connections[i]
+		if is_zero_approx(connection.flow_friction):
+			continue
+		
+		connection.flow_friction = 0
 		connection.get_connecting_node(self).queue_update()
