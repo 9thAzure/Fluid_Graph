@@ -15,6 +15,7 @@ script = ExtResource("1_x5dke")
 self_modulate = Color(0, 1, 1, 1)
 position = Vector2(110, 97)
 script = ExtResource("2_euf3m")
+production_rate = 10.0
 connections = [NodePath("../FluidConnection")]
 
 [node name="BaseRouter" type="Node2D" parent="FluidGraph" node_paths=PackedStringArray("connections")]

@@ -5,6 +5,14 @@ var producers : Array[BaseProducer] = []
 var consumers : Array[BaseConsumer] = []
 var routers : Array[BaseRouter] = []
 
+signal fluid_update()
+
+var continue_update := false:
+	get:
+		return false
+	set(_value):
+		fluid_update.emit()
+
 func _enter_tree() -> void:
 	child_entered_tree.connect(_on_child_entered_tree)
 	child_exiting_tree.connect(_on_child_exiting_tree)
