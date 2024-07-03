@@ -11,7 +11,7 @@ var scaling_factor := 1.0
 
 func _draw() -> void:
 	var rect := Rect2(-10, -5, 20, 10)
-	draw_rect(rect, Color.CYAN)
+	draw_rect(rect, Color.WHITE)
 
 var t := 0.5
 
@@ -24,15 +24,12 @@ func _ready() -> void:
 		return
 	
 	scaling_factor = 1 / (connection.node1.position - connection.node2.position).length()
-	rotation = connection.node1.position.angle_to(connection.node2.position)
+	rotation = connection.node1.position.angle_to_point(connection.node2.position) + PI / 2
 	set_process(true)
 
 func _process(delta: float) -> void:
 	t += delta * speed * connection.flow_rate * scaling_factor
-	t = wrapf(t, 0.0, 1.1)
+	t = wrapf(t, 0.0, 1.0)
 
 	position = lerp(connection.node1.position, connection.node2.position, t)
-
-
-
-
+	self_modulate = lerp(connection.node1.self_modulate, connection.node2.self_modulate, t)

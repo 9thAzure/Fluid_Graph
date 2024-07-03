@@ -29,7 +29,7 @@ consumption_rate = 4.0
 
 [node name="BaseConsumer2" type="Node2D" parent="FluidGraph"]
 self_modulate = Color(1, 0, 0, 1)
-position = Vector2(398, 174)
+position = Vector2(250, 217)
 script = ExtResource("4_vsa6s")
 consumption_rate = 6.0
 
