@@ -19,9 +19,9 @@ func _on_child_entered_tree(node : Node) -> void:
 		if node is BaseProducer:
 			producers.append(node)
 		elif node is BaseConsumer:
-			producers.append(node)
+			consumers.append(node)
 		elif node is BaseRouter:
-			producers.append(node)
+			routers.append(node)
 
 
 func _on_child_exiting_tree(node : Node) -> void:
@@ -30,9 +30,9 @@ func _on_child_exiting_tree(node : Node) -> void:
 		if node is BaseProducer:
 			producers.erase(node)
 		elif node is BaseConsumer:
-			producers.erase(node)
+			consumers.erase(node)
 		elif node is BaseRouter:
-			producers.erase(node)
+			routers.erase(node)
 
 func _ready() -> void:
 	update()

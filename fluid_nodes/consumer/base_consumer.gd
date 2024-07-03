@@ -21,4 +21,8 @@ func _update() -> void:
 	
 	efficiency = 1.0
 	extra_flow_rate = inflowing_rate - consumption_rate
+
+	if is_zero_approx(extra_flow_rate):
+		return
+
 	_handle_backflow()

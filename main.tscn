@@ -4,31 +4,44 @@
 [ext_resource type="Script" path="res://fluid_nodes/producer/base_producer.gd" id="2_euf3m"]
 [ext_resource type="Script" path="res://fluid_nodes/transportation/router.gd" id="3_ve5l2"]
 [ext_resource type="Script" path="res://fluid_nodes/consumer/base_consumer.gd" id="4_vsa6s"]
-[ext_resource type="Script" path="res://fluid_nodes/transportation/fluid_connection.gd" id="5_51aa2"]
+[ext_resource type="PackedScene" uid="uid://d0jkrhdc7yq5o" path="res://fluid_nodes/transportation/fluid_connection.tscn" id="5_qsg1c"]
 
 [node name="Root" type="Node2D"]
 
 [node name="FluidGraph" type="Node2D" parent="."]
 script = ExtResource("1_x5dke")
 
-[node name="BaseProducer" type="Node2D" parent="FluidGraph"]
+[node name="BaseProducer" type="Node2D" parent="FluidGraph" node_paths=PackedStringArray("connections")]
 self_modulate = Color(0, 1, 1, 1)
 position = Vector2(110, 97)
 script = ExtResource("2_euf3m")
+connections = [NodePath("../FluidConnection")]
 
-[node name="BaseRouter" type="Node2D" parent="FluidGraph"]
+[node name="BaseRouter" type="Node2D" parent="FluidGraph" node_paths=PackedStringArray("connections")]
 position = Vector2(245, 112)
 script = ExtResource("3_ve5l2")
+connections = [NodePath("../FluidConnection"), NodePath("../FluidConnection2"), NodePath("../FluidConnection3")]
 
-[node name="BaseConsumer" type="Node2D" parent="FluidGraph"]
+[node name="BaseConsumer" type="Node2D" parent="FluidGraph" node_paths=PackedStringArray("connections")]
 position = Vector2(404, 73)
 script = ExtResource("4_vsa6s")
 consumption_rate = 4.0
+connections = [NodePath("../FluidConnection2")]
 
-[node name="BaseConsumer2" type="Node2D" parent="FluidGraph"]
+[node name="BaseConsumer2" type="Node2D" parent="FluidGraph" node_paths=PackedStringArray("connections")]
 position = Vector2(398, 174)
 script = ExtResource("4_vsa6s")
 consumption_rate = 6.0
+connections = [NodePath("../FluidConnection3")]
 
-[node name="FluidConnection" type="Node2D" parent="FluidGraph"]
-script = ExtResource("5_51aa2")
+[node name="FluidConnection" parent="FluidGraph" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_qsg1c")]
+node1 = NodePath("../BaseProducer")
+node2 = NodePath("../BaseRouter")
+
+[node name="FluidConnection2" parent="FluidGraph" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_qsg1c")]
+node1 = NodePath("../BaseRouter")
+node2 = NodePath("../BaseConsumer")
+
+[node name="FluidConnection3" parent="FluidGraph" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_qsg1c")]
+node1 = NodePath("../BaseConsumer2")
+node2 = NodePath("../BaseRouter")
