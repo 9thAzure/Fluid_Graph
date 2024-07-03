@@ -7,7 +7,10 @@ var routers : Array[BaseRouter] = []
 
 signal fluid_update()
 
-var continue_update := false:
+@export
+var controlled_update := false
+
+var progress_update := false:
 	get:
 		return false
 	set(_value):

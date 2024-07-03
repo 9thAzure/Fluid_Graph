@@ -37,7 +37,8 @@ func queue_update() -> void:
 	
 	is_queued = true
 	await get_tree().process_frame
-	await parent_graph.fluid_update
+	if parent_graph.controlled_update:
+		await parent_graph.fluid_update
 	if not is_queued:
 		return # this means the method was called already during the delay time.
 	is_queued = false
