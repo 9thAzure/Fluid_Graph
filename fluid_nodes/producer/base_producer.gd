@@ -7,6 +7,8 @@ var production_rate := 0.0:
 	set(value):
 		production_rate = value
 		current_flow_rate = value
+		if not Engine.is_editor_hint() and is_inside_tree():
+			queue_update()
 
 func _init() -> void:
 	self_modulate = Color.CYAN
