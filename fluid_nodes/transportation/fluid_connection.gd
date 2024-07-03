@@ -5,22 +5,25 @@ class_name FluidConnection
 @export
 var node1 : BaseFluidNode = null:
 	set(value):
-		if node1 != null:
-			node1.connections.erase(self)
-		if value != null:
-			value.connections.append(self)
+		change_connection(node1, value)
 		node1 = value
 		queue_redraw()
 
 @export
 var node2 : BaseFluidNode = null:
 	set(value):
-		if node2 != null:
-			node2.connections.erase(self)
-		if value != null:
-			value.connections.append(self)
+		change_connection(node2, value)
 		node2 = value
 		queue_redraw()
+
+func change_connection(old_node : BaseFluidNode, new_node : BaseFluidNode) -> void:
+	if Engine.is_editor_hint():
+		return
+
+	if old_node != null:
+		old_node.connections.erase(self)
+	if new_node != null:
+		new_node.connections.append(self)
 
 # from node1 to node2, negative values indicate flows from node2 to node1.
 var flow_rate := 0.0

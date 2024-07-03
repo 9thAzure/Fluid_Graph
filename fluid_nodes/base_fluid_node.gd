@@ -5,17 +5,13 @@ class_name BaseFluidNode
 var parent_graph : FluidGraph = null
 
 @export 
-var size := 10.0:
+var node_size := 10.0:
 	set(value):
-		size = value
+		node_size = value
 		queue_redraw()
 
 func _draw() -> void:
-	draw_circle(Vector2.ZERO, size, Color.WHITE)
-	# for node in connections:
-	# 	if node == null:
-	# 		continue
-	# 	draw_line(Vector2.ZERO, node.global_position - global_position, Color(1, 1, 1, 0.5), 1)
+	draw_circle(Vector2.ZERO, node_size, Color.WHITE)
 
 @export
 var connections : Array[FluidConnection] = []
@@ -88,7 +84,8 @@ func _update() -> void:
 	sort_connections()
 
 	var flow_rate := 0.0
-	for i in connections.size():
+	var size := connections.size()
+	for i in size:
 		var connection := connections[i]
 		var split_flow_rate := flow_rate / (size - i)
 		if i >= connections_input_output_divider:

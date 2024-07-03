@@ -15,7 +15,8 @@ func _update() -> void:
 	sort_connections()
 
 	var flow_rate := production_rate
-	for i in connections.size():
+	var size := connections.size()
+	for i in size:
 		var connection := connections[i]
 		var split_flow_rate := flow_rate / (size - i)
 		if i >= connections_input_output_divider:
