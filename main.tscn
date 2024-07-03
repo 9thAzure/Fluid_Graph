@@ -1,3 +1,34 @@
-[gd_scene format=3 uid="uid://bd4wpw3cocxd6"]
+[gd_scene load_steps=6 format=3 uid="uid://bd4wpw3cocxd6"]
+
+[ext_resource type="Script" path="res://fluid_nodes/fluid_graph.gd" id="1_x5dke"]
+[ext_resource type="Script" path="res://fluid_nodes/producer/base_producer.gd" id="2_euf3m"]
+[ext_resource type="Script" path="res://fluid_nodes/transportation/router.gd" id="3_ve5l2"]
+[ext_resource type="Script" path="res://fluid_nodes/consumer/base_consumer.gd" id="4_vsa6s"]
+[ext_resource type="Script" path="res://fluid_nodes/transportation/fluid_connection.gd" id="5_51aa2"]
 
 [node name="Root" type="Node2D"]
+
+[node name="FluidGraph" type="Node2D" parent="."]
+script = ExtResource("1_x5dke")
+
+[node name="BaseProducer" type="Node2D" parent="FluidGraph"]
+self_modulate = Color(0, 1, 1, 1)
+position = Vector2(110, 97)
+script = ExtResource("2_euf3m")
+
+[node name="BaseRouter" type="Node2D" parent="FluidGraph"]
+position = Vector2(245, 112)
+script = ExtResource("3_ve5l2")
+
+[node name="BaseConsumer" type="Node2D" parent="FluidGraph"]
+position = Vector2(404, 73)
+script = ExtResource("4_vsa6s")
+consumption_rate = 4.0
+
+[node name="BaseConsumer2" type="Node2D" parent="FluidGraph"]
+position = Vector2(398, 174)
+script = ExtResource("4_vsa6s")
+consumption_rate = 6.0
+
+[node name="FluidConnection" type="Node2D" parent="FluidGraph"]
+script = ExtResource("5_51aa2")

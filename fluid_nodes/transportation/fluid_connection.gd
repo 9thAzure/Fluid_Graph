@@ -11,11 +11,11 @@ var node1 : BaseFluidNode = null:
 		
 var node2 : BaseFluidNode = null:
 	set(value):
-		if node1 != null:
-			node1.connections.erase(self)
+		if node2 != null:
+			node2.connections.erase(self)
 		if value != null:
 			value.connections.append(self)
-		node1 = value
+		node2 = value
 
 # from node1 to node2, negative values indicate flows from node2 to node1.
 var flow_rate := 0.0
