@@ -11,6 +11,8 @@ func _init() -> void:
 	self_modulate = Color.RED
 
 func _update() -> void:
+	connections_input_output_divider = connections.size()
+
 	var inflowing_rate := 0.0
 	for connection in connections:
 		var flow_rate = -connection.get_relative_flow_rate(self)

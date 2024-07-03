@@ -16,7 +16,7 @@ controlled_update = true
 self_modulate = Color(0, 1, 1, 1)
 position = Vector2(110, 97)
 script = ExtResource("2_euf3m")
-production_rate = 9.0
+production_rate = 10.0
 
 [node name="BaseRouter" type="Node2D" parent="FluidGraph"]
 position = Vector2(245, 112)
