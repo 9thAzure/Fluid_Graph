@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://d0jkrhdc7yq5o"]
+[gd_scene load_steps=3 format=3 uid="uid://d0jkrhdc7yq5o"]
 
 [ext_resource type="Script" path="res://fluid_nodes/transportation/fluid_connection.gd" id="1_m3eq2"]
+[ext_resource type="Script" path="res://fluid_nodes/transportation/flow_visualizer.gd" id="2_uw3bo"]
 
 [node name="FluidConnection" type="Node2D"]
 script = ExtResource("1_m3eq2")
+
+[node name="FlowVisualizer" type="Node2D" parent="." node_paths=PackedStringArray("connection")]
+script = ExtResource("2_uw3bo")
+connection = NodePath("..")

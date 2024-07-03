@@ -7,6 +7,9 @@ var consumption_rate := 0.0
 
 var efficiency := 1.0
 
+func _init() -> void:
+	self_modulate = Color.RED
+
 func _update() -> void:
 	var inflowing_rate := 0.0
 	for connection in connections:
