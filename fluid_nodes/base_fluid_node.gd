@@ -85,36 +85,46 @@ func _update() -> void:
 	sort_connections()
 
 	var flow_rate := 0.0
+	var flow_pressure := 0.0
 	var size := connections.size()
 	for i in size:
 		var connection := connections[i]
-		var split_flow_rate := flow_rate / (size - i)
+		var divider := (size - 1)
+		# var split_flow_rate := flow_rate / divider
+		var split_flow_pressure := flow_pressure / divider
 		if i >= connections_input_output_divider:
-			split_flow_rate -= connection.flow_friction
-			connection.set_relative_flow_rate(self, split_flow_rate)
-			flow_rate -= split_flow_rate
+			flow_pressure -= split_flow_pressure
+
+			split_flow_pressure -= connection.flow_friction
+			connection.set_relative_flow_rate(self, split_flow_pressure)
+			flow_rate -= split_flow_pressure
 			connection.get_connecting_node(self).queue_update()
 			continue
 
 		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
 		var ingoing_pressure := ingoing_flow_rate + connection.flow_friction
-		if ingoing_pressure >= split_flow_rate: # inflowing flows are negative
+		if ingoing_pressure >= split_flow_pressure: # inflowing flows are negative
 			flow_rate += ingoing_flow_rate 
+			flow_pressure += ingoing_pressure
 			continue
 		
 		# ingoing flow that is less thant split_flow_rate
-		split_flow_rate -= ingoing_pressure
+		flow_pressure -= split_flow_pressure
+		split_flow_pressure -= ingoing_pressure
 		connection.flow_friction = ingoing_pressure
-		connection.set_relative_flow_rate(self, split_flow_rate)
-		flow_rate -= split_flow_rate
+		connection.set_relative_flow_rate(self, split_flow_pressure)
+		flow_rate -= split_flow_pressure
 		connection.get_connecting_node(self).queue_update()
 	
 	extra_flow_rate = flow_rate
-	if not is_zero_approx(extra_flow_rate):
+	if is_zero_approx(extra_flow_rate):
+		return
+	
+	if extra_flow_rate > 0:
 		_handle_backflow()
 		return
 	
-	if is_zero_approx(connections[-1].flow_friction):
+	if flow_rate < 0:
 		_request_more_flow()
 	
 func _handle_backflow() -> void:
