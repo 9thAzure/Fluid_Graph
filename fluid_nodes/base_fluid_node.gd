@@ -16,7 +16,7 @@ func _draw() -> void:
 @export
 var connections : Array[FluidConnection] = []
 
-var connections_input_output_divider := 0
+var connections_input_output_divider := -1
 
 var previous_position := position
 func _process(_delta) -> void:
@@ -118,49 +118,24 @@ func _update() -> void:
 		_request_more_flow()
 	
 func _handle_backflow() -> void:
-	print('handling_backflow: %s' % self)
-	# to handle backflow, input sources have to be capped. frictions of output connections then have to be reduced.
+	# to handle backflow, input sources have to be capped
 	# 2 options as I see it, we stop flow of a pipe one by one or slow down all of them. Going with the second option
-
 	var inflowing_pressure := 0.0
-	for i in connections_input_output_divider:
-		var connection := connections[i]
+	var inflowing_connections : Array[FluidConnection] = []
+	for connection in connections:
 		var flow := connection.get_relative_flow_rate(self)
+		if flow >= 0.0:
+			continue
+
+		inflowing_connections.append(connection)
 		inflowing_pressure += -flow + connection.flow_friction
-
-	# var inflowing_connections : Array[FluidConnection] = []
-	# for connection in connections:
-	# 	if flow >= 0.0:
-	# 		continue
-
-	# 	inflowing_connections.append(connection)
 	
 	var friction_multiplier := extra_flow_rate / inflowing_pressure
-
-	# for connection in inflowing_connections:
-	for i in connections_input_output_divider:
-		var connection := connections[i]
+	for connection in inflowing_connections:
 		var pressure := absf(connection.flow_rate) + connection.flow_friction
 		connection.flow_friction = pressure * friction_multiplier
 		connection.set_relative_flow_rate(self, -(pressure - connection.flow_friction))
 		connection.get_connecting_node(self).queue_update()
-	
-	var friction_to_remove := extra_flow_rate
-	var size := connections.size() - connections_input_output_divider
-	for i in size:
-		var index := -i - 1
-		var split_friction_to_remove := friction_to_remove / (size - i)
-		var connection := connections[index]
-		if connection.flow_friction < split_friction_to_remove:
-			friction_to_remove = connection.flow_friction
-			connection.flow_friction = 0
-			continue
-		
-		connection.flow_friction -= split_friction_to_remove
-		friction_to_remove -= split_friction_to_remove
-	
-	if friction_to_remove > 0:
-		printerr("unable to remove friction")
 
 func _request_more_flow() -> void:
 	for i in connections_input_output_divider:
