@@ -108,9 +108,11 @@ func _update() -> void:
 
 	# TODO: testing, may not be necessary
 	# var friction_from_backflow := connections[-1].flow_friction
-	# var expected_input_flow_friction := friction_from_backflow * (connections.size() - connections_input_output_divider)
+	var expected_input_flow_friction := connections[-1].flow_friction * (connections.size() - connections_input_output_divider)
+
 	# friction_from_backflow *= input_flow_friction / expected_input_flow_friction
 
+	# friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
 	var friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
 	
 	for i in size - connections_input_output_divider:
@@ -118,7 +120,7 @@ func _update() -> void:
 		var connection := connections[index]
 		var split_flow_rate := flow_rate / (size - index)
 
-		split_flow_rate -= connection.flow_friction - friction_from_backflow
+		split_flow_rate -= maxf(connection.flow_friction - friction_from_backflow, 0)
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
 		connection.get_connecting_node(self).queue_update()
@@ -128,9 +130,8 @@ func _update() -> void:
 		_handle_backflow()
 		return
 	
-	# if is_zero_approx(connections[-1].flow_friction):
-	# if expected_input_flow_friction < input_flow_friction:
-	# 	_request_more_flow()
+	if expected_input_flow_friction < input_flow_friction:
+		_request_more_flow()
 	
 func _handle_backflow() -> void:
 	# to handle backflow, input sources have to be capped
