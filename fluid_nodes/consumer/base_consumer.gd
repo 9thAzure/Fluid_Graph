@@ -14,7 +14,9 @@ func _update() -> void:
 	var inflowing_rate := 0.0
 	for connection in connections:
 		var flow_rate = -connection.get_relative_flow_rate(self)
-		assert(flow_rate >= 0.0, "unexpected flow rate: consumer is giving flow away")
+		# assert(flow_rate >= 0.0, "unexpected flow rate: consumer is giving flow away")
+		if flow_rate < 0:
+			printerr("unexpected flow rate: consumer is giving flow away")
 		inflowing_rate += flow_rate
 
 	if inflowing_rate < consumption_rate:

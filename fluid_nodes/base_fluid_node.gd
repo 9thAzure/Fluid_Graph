@@ -86,13 +86,17 @@ func _update() -> void:
 
 	var flow_rate := 0.0
 	var size := connections.size()
+	var input_flow_friction := 0.0
 	for i in connections_input_output_divider:
 		var connection := connections[i]
 		var split_flow_rate := flow_rate / (size - i)
+
 		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
 		var ingoing_pressure := ingoing_flow_rate + connection.flow_friction
 		if ingoing_pressure >= split_flow_rate: # inflowing flows are negative
 			flow_rate += ingoing_flow_rate 
+			# unaccounted_backflow_friction += connection.flow_friction
+			input_flow_friction += connection.flow_friction
 			continue
 		
 		# ingoing flow that is less thant split_flow_rate
@@ -101,13 +105,20 @@ func _update() -> void:
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
 		connection.get_connecting_node(self).queue_update()
+
+	# TODO: testing, may not be necessary
+	# var friction_from_backflow := connections[-1].flow_friction
+	# var expected_input_flow_friction := friction_from_backflow * (connections.size() - connections_input_output_divider)
+	# friction_from_backflow *= input_flow_friction / expected_input_flow_friction
+
+	var friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
 	
 	for i in size - connections_input_output_divider:
-		var index := size - i - 1
+		var index := connections_input_output_divider + i
 		var connection := connections[index]
 		var split_flow_rate := flow_rate / (size - index)
 
-		split_flow_rate -= connection.flow_friction
+		split_flow_rate -= connection.flow_friction - friction_from_backflow
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
 		connection.get_connecting_node(self).queue_update()
@@ -117,8 +128,9 @@ func _update() -> void:
 		_handle_backflow()
 		return
 	
-	if is_zero_approx(connections[-1].flow_friction):
-		_request_more_flow()
+	# if is_zero_approx(connections[-1].flow_friction):
+	# if expected_input_flow_friction < input_flow_friction:
+	# 	_request_more_flow()
 	
 func _handle_backflow() -> void:
 	# to handle backflow, input sources have to be capped
