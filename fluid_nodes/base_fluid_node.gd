@@ -112,6 +112,14 @@ func _update() -> void:
 
 	# friction_from_backflow *= input_flow_friction / expected_input_flow_friction
 
+	var difference := expected_input_flow_friction - input_flow_friction
+	print(difference)
+	extra_flow_rate = 0
+	if not is_zero_approx(difference):
+		extra_flow_rate = difference
+		flow_rate -= difference
+		input_flow_friction += difference
+
 	# friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
 	var friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
 	
@@ -125,7 +133,7 @@ func _update() -> void:
 		flow_rate -= split_flow_rate
 		connection.get_connecting_node(self).queue_update()
 
-	extra_flow_rate = flow_rate
+	extra_flow_rate += flow_rate
 	if not is_zero_approx(extra_flow_rate):
 		_handle_backflow()
 		return
