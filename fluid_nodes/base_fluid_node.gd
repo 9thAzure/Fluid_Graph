@@ -113,7 +113,6 @@ func _update() -> void:
 	# friction_from_backflow *= input_flow_friction / expected_input_flow_friction
 
 	var difference := expected_input_flow_friction - input_flow_friction
-	print(difference)
 	extra_flow_rate = 0
 	if not is_zero_approx(difference):
 		extra_flow_rate = difference

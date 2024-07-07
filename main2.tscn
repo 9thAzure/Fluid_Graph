@@ -26,13 +26,13 @@ script = ExtResource("3_t3sii")
 self_modulate = Color(1, 0, 0, 1)
 position = Vector2(296, 270)
 script = ExtResource("4_iu5on")
-consumption_rate = 1.0
+consumption_rate = 1.5
 
 [node name="BaseConsumer2" type="Node2D" parent="FluidGraph"]
 self_modulate = Color(1, 0, 0, 1)
 position = Vector2(445, 114)
 script = ExtResource("4_iu5on")
-consumption_rate = 1.0
+consumption_rate = 0.5
 
 [node name="FluidConnection" parent="FluidGraph" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_1mlx7")]
 node1 = NodePath("../BaseProducer")
