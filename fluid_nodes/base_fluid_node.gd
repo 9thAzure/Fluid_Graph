@@ -147,24 +147,22 @@ func _update() -> void:
 func _handle_backflow() -> void:
 	# to handle backflow, input sources have to be capped
 	# 2 options as I see it, we stop flow of a pipe one by one or slow down all of them. Going with the second option
-	# var inflowing_pressure := 0.0
-	var inflowing_connections : Array[FluidConnection] = []
-	for connection in connections:
+	
+	var inflowing_rate := 0.0
+	for i in connections_input_output_divider:
+		var connection := connections[i]
 		var flow := connection.get_relative_flow_rate(self)
 		if flow >= 0.0:
 			continue
 
-		inflowing_connections.append(connection)
-		# inflowing_pressure += -flow + connection.flow_friction
+		inflowing_rate += -flow
 	
-	# var friction_multiplier := extra_flow_rate / inflowing_pressure
-	for connection in inflowing_connections:
-		# TODO: implement
-		pass
-		# var pressure := absf(connection.flow_rate) + connection.flow_friction
-		# connection.flow_friction = pressure * friction_multiplier
-		# connection.set_relative_flow_rate(self, -(pressure - connection.flow_friction))
-		# connection.get_connecting_node(self).queue_update()
+	var reduction_rate := extra_flow_rate / inflowing_rate
+	for i in connections_input_output_divider:
+		var connection := connections[i]
+		connection.pressure += abs(connection.flow_rate) * reduction_rate
+		connection.allowed_flow_rate += abs(connection.flow_rate) * (1 - reduction_rate)
+		connection.flow_rate = connection.flow_rate * (1 - reduction_rate)
 
 func _request_more_flow() -> void:
 	# TODO: reimplement
