@@ -1,4 +1,3 @@
-# TODO: implement pressure
 @tool
 extends Node2D
 class_name FluidConnection
@@ -34,6 +33,8 @@ var flow_rate := 0.0
 
 var allowed_flow_rate := 0.0
 
+var pressure := 0.0
+
 func _ready() -> void:
 	reset_allowed_flow_rate()
 
@@ -64,6 +65,21 @@ func set_relative_flow_rate(source_node : BaseFluidNode, value : float) -> void:
 	
 	assert(is_same(source_node, node2))
 	flow_rate = -value
+
+func get_relative_pressure(source_node : BaseFluidNode) -> float:
+	if is_same(source_node, node1):
+		return pressure
+	
+	assert(is_same(source_node, node2))
+	return -pressure
+
+func set_relative_pressure(source_node : BaseFluidNode, value : float) -> void:
+	if is_same(source_node, node1):
+		pressure = value
+		return
+	
+	assert(is_same(source_node, node2))
+	pressure = -value
 
 func _draw() -> void:
 	if not is_complete():
