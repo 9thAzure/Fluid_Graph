@@ -1,3 +1,4 @@
+# TODO: implement pressure
 @tool
 extends Node2D
 class_name FluidConnection
@@ -25,10 +26,19 @@ func change_connection(old_node : BaseFluidNode, new_node : BaseFluidNode) -> vo
 	if new_node != null:
 		new_node.connections.append(self)
 
+@export
+var max_flow_rate := 100.0
+
 # from node1 to node2, negative values indicate flows from node2 to node1.
 var flow_rate := 0.0
 
-var flow_friction := 0.0
+var allowed_flow_rate := 0.0
+
+func _ready() -> void:
+	reset_allowed_flow_rate()
+
+func reset_allowed_flow_rate() -> void:
+	allowed_flow_rate = max_flow_rate
 
 func is_complete() -> bool:
 	return node1 != null and node2 != null

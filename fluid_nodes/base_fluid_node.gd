@@ -48,7 +48,7 @@ func queue_update() -> void:
 #   input: ingoing flow rate (- relative flow)
 #     - has to further be sorted from largest relative flow rate to smallest relative flow rate
 #  output: other flow rate
-#     - further sorted from largest friction to smallest
+#     - further sorted from Smallest allowed flow to largest
 
 # if true, a and b is sorted
 func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bool:
@@ -67,7 +67,7 @@ func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bo
 		return flow_rate_a < flow_rate_b # ingoing flow rates are negative, so in actuality, checking that flow_rate_a is greater
 	
 	# both a and b are not input connections
-	return a.flow_friction > b.flow_friction
+	return a.allowed_flow_rate < b.allowed_flow_rate
 
 func sort_connections() -> void:
 	connections.sort_custom(_custom_connection_comparer)
@@ -86,48 +86,52 @@ func _update() -> void:
 
 	var flow_rate := 0.0
 	var size := connections.size()
-	var input_flow_friction := 0.0
+	# var input_flow_friction := 0.0
 	for i in connections_input_output_divider:
 		var connection := connections[i]
 		var split_flow_rate := flow_rate / (size - i)
 
 		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
-		var ingoing_pressure := ingoing_flow_rate + connection.flow_friction
-		if ingoing_pressure >= split_flow_rate: # inflowing flows are negative
+		# var ingoing_pressure := ingoing_flow_rate + connection.flow_friction
+		if ingoing_flow_rate >= split_flow_rate: # inflowing flows are negative
 			flow_rate += ingoing_flow_rate 
 			# unaccounted_backflow_friction += connection.flow_friction
-			input_flow_friction += connection.flow_friction
+			# input_flow_friction += connection.flow_friction
 			continue
 		
 		# ingoing flow that is less thant split_flow_rate
-		split_flow_rate -= ingoing_pressure
-		connection.flow_friction = ingoing_pressure
+		split_flow_rate -= ingoing_flow_rate
+		# connection.flow_friction = ingoing_pressure
+		connection.allowed_flow_rate = split_flow_rate
+		# TODO: some way to signify pressure
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
 		connection.get_connecting_node(self).queue_update()
 
 	# TODO: testing, may not be necessary
 	# var friction_from_backflow := connections[-1].flow_friction
-	var expected_input_flow_friction := connections[-1].flow_friction * (connections.size() - connections_input_output_divider)
+	# var expected_input_flow_friction := connections[-1].flow_friction * (connections.size() - connections_input_output_divider)
 
 	# friction_from_backflow *= input_flow_friction / expected_input_flow_friction
 
-	var difference := expected_input_flow_friction - input_flow_friction
+	# var difference := expected_input_flow_friction - input_flow_friction
 	extra_flow_rate = 0
-	if not is_zero_approx(difference):
-		extra_flow_rate = difference
-		flow_rate -= difference
-		input_flow_friction += difference
+	# if not is_zero_approx(difference):
+	# 	extra_flow_rate = difference
+	# 	flow_rate -= difference
+	# 	input_flow_friction += difference
 
 	# friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
-	var friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
+	# var friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
 	
 	for i in size - connections_input_output_divider:
 		var index := connections_input_output_divider + i
 		var connection := connections[index]
 		var split_flow_rate := flow_rate / (size - index)
 
-		split_flow_rate -= maxf(connection.flow_friction - friction_from_backflow, 0)
+		if split_flow_rate > connection.allowed_flow_rate:
+			split_flow_rate = connection.allowed_flow_rate
+		# split_flow_rate -= maxf(connection.flow_friction - friction_from_backflow, 0)
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
 		connection.get_connecting_node(self).queue_update()
@@ -137,13 +141,13 @@ func _update() -> void:
 		_handle_backflow()
 		return
 	
-	if expected_input_flow_friction < input_flow_friction:
-		_request_more_flow()
+	# if expected_input_flow_friction < input_flow_friction:
+	# 	_request_more_flow()
 	
 func _handle_backflow() -> void:
 	# to handle backflow, input sources have to be capped
 	# 2 options as I see it, we stop flow of a pipe one by one or slow down all of them. Going with the second option
-	var inflowing_pressure := 0.0
+	# var inflowing_pressure := 0.0
 	var inflowing_connections : Array[FluidConnection] = []
 	for connection in connections:
 		var flow := connection.get_relative_flow_rate(self)
@@ -151,20 +155,24 @@ func _handle_backflow() -> void:
 			continue
 
 		inflowing_connections.append(connection)
-		inflowing_pressure += -flow + connection.flow_friction
+		# inflowing_pressure += -flow + connection.flow_friction
 	
-	var friction_multiplier := extra_flow_rate / inflowing_pressure
+	# var friction_multiplier := extra_flow_rate / inflowing_pressure
 	for connection in inflowing_connections:
-		var pressure := absf(connection.flow_rate) + connection.flow_friction
-		connection.flow_friction = pressure * friction_multiplier
-		connection.set_relative_flow_rate(self, -(pressure - connection.flow_friction))
-		connection.get_connecting_node(self).queue_update()
+		# TODO: implement
+		pass
+		# var pressure := absf(connection.flow_rate) + connection.flow_friction
+		# connection.flow_friction = pressure * friction_multiplier
+		# connection.set_relative_flow_rate(self, -(pressure - connection.flow_friction))
+		# connection.get_connecting_node(self).queue_update()
 
 func _request_more_flow() -> void:
-	for i in connections_input_output_divider:
-		var connection := connections[i]
-		if is_zero_approx(connection.flow_friction):
-			continue
+	# TODO: reimplement
+	pass
+	# for i in connections_input_output_divider:
+	# 	var connection := connections[i]
+	# 	if is_zero_approx(connection.flow_friction):
+	# 		continue
 		
-		connection.flow_friction = 0
-		connection.get_connecting_node(self).queue_update()
+	# 	connection.flow_friction = 0
+	# 	connection.get_connecting_node(self).queue_update()
