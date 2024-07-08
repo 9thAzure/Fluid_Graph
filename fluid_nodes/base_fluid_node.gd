@@ -164,6 +164,7 @@ func _handle_backflow() -> void:
 		connection.pressure += abs(connection.flow_rate) * reduction_rate
 		connection.allowed_flow_rate += abs(connection.flow_rate) * (1 - reduction_rate)
 		connection.flow_rate = connection.flow_rate * (1 - reduction_rate)
+		connection.get_connecting_node(self).queue_update()
 
 func _request_more_flow() -> void:
 	# TODO: reimplement
