@@ -92,8 +92,8 @@ func _update() -> void:
 		var split_flow_rate := flow_rate / (size - i)
 
 		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
-		# var ingoing_pressure := ingoing_flow_rate + connection.flow_friction
-		if ingoing_flow_rate >= split_flow_rate: # inflowing flows are negative
+		var ingoing_pressure := ingoing_flow_rate + connection.pressure
+		if ingoing_pressure >= split_flow_rate: # inflowing flows are negative
 			flow_rate += ingoing_flow_rate 
 			# unaccounted_backflow_friction += connection.flow_friction
 			# input_flow_friction += connection.flow_friction
@@ -101,9 +101,8 @@ func _update() -> void:
 		
 		# ingoing flow that is less thant split_flow_rate
 		split_flow_rate -= ingoing_flow_rate
-		# connection.flow_friction = ingoing_pressure
 		connection.allowed_flow_rate = split_flow_rate
-		# TODO: some way to signify pressure
+		connection.pressure = ingoing_flow_rate
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
 		connection.get_connecting_node(self).queue_update()
