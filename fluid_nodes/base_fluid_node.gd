@@ -129,9 +129,11 @@ func _update() -> void:
 		var connection := connections[index]
 		var split_flow_rate := flow_rate / (size - index)
 
+		connection.pressure = 0
 		if split_flow_rate > connection.allowed_flow_rate:
+			connection.pressure = split_flow_rate - connection.allowed_flow_rate
 			split_flow_rate = connection.allowed_flow_rate
-		# split_flow_rate -= maxf(connection.flow_friction - friction_from_backflow, 0)
+		
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
 		connection.get_connecting_node(self).queue_update()
