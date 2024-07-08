@@ -37,8 +37,7 @@ position = Vector2(250, 217)
 script = ExtResource("4_vsa6s")
 consumption_rate = 6.0
 
-[node name="FluidConnection" parent="FluidGraph" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_qsg1c")]
-node1 = NodePath("../BaseProducer")
+[node name="FluidConnection" parent="FluidGraph" node_paths=PackedStringArray("node2") instance=ExtResource("5_qsg1c")]
 node2 = NodePath("../BaseRouter")
 
 [node name="FluidConnection2" parent="FluidGraph" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_qsg1c")]

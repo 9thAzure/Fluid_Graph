@@ -14,9 +14,10 @@ func _update() -> void:
 	var inflowing_rate := 0.0
 	for connection in connections:
 		var flow_rate = -connection.get_relative_flow_rate(self)
-		# assert(flow_rate >= 0.0, "unexpected flow rate: consumer is giving flow away")
 		if flow_rate < 0:
-			printerr("unexpected flow rate: consumer is giving flow away")
+			printerr("unexpected flow rate: consumer is giving flow away to %s" % connection.get_connecting_node(self))
+			continue
+
 		inflowing_rate += flow_rate
 
 	if inflowing_rate < consumption_rate:
@@ -34,32 +35,34 @@ func _update() -> void:
 	_handle_backflow()
 
 func _request_more_flow() -> void:
-	var required_flow_increase := consumption_rate * (1 - efficiency)
-	var total_flow_friction := 0.0
-	for connection in connections:
-		total_flow_friction += connection.flow_friction
+	# TODO: implement
+	pass
+	# var required_flow_increase := consumption_rate * (1 - efficiency)
+	# var total_flow_friction := 0.0
+	# for connection in connections:
+	# 	total_flow_friction += connection.flow_friction
 	
-	print(required_flow_increase, total_flow_friction)
+	# print(required_flow_increase, total_flow_friction)
 	
-	if total_flow_friction <= required_flow_increase:
-		if is_zero_approx(total_flow_friction):
-			return
+	# if total_flow_friction <= required_flow_increase:
+	# 	if is_zero_approx(total_flow_friction):
+	# 		return
 
-		for connection in connections:
-			if is_zero_approx(connection.flow_friction):
-				continue
+	# 	for connection in connections:
+	# 		if is_zero_approx(connection.flow_friction):
+	# 			continue
 
-			connection.flow_friction = 0
-			connection.get_connecting_node(self).queue_update()
-		return
+	# 		connection.flow_friction = 0
+	# 		connection.get_connecting_node(self).queue_update()
+	# 	return
 
-	var decrease_rate := 1 - required_flow_increase / total_flow_friction
-	for connection in connections:
-		if is_zero_approx(connection.flow_friction):
-			continue
+	# var decrease_rate := 1 - required_flow_increase / total_flow_friction
+	# for connection in connections:
+	# 	if is_zero_approx(connection.flow_friction):
+	# 		continue
 
-		connection.flow_friction *= decrease_rate
-		if is_zero_approx(connection.flow_friction):
-			connection.flow_friction = 0
+	# 	connection.flow_friction *= decrease_rate
+	# 	if is_zero_approx(connection.flow_friction):
+	# 		connection.flow_friction = 0
 		
-		connection.get_connecting_node(self).queue_update()
+	# 	connection.get_connecting_node(self).queue_update()
