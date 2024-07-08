@@ -77,7 +77,7 @@ func _update() -> void:
 
 	var flow_rate := 0.0
 	var size := connections.size()
-	# var input_flow_friction := 0.0
+	var isolated_pressure := 0.0
 	for i in connections_input_output_divider:
 		var connection := connections[i]
 		var split_flow_rate := flow_rate / (size - i)
@@ -86,6 +86,7 @@ func _update() -> void:
 		var ingoing_pressure := ingoing_flow_rate + connection.pressure
 		if ingoing_pressure >= split_flow_rate: # inflowing flows are negative
 			flow_rate += ingoing_flow_rate 
+			isolated_pressure += connection.pressure
 			# unaccounted_backflow_friction += connection.flow_friction
 			# input_flow_friction += connection.flow_friction
 			continue
@@ -119,9 +120,9 @@ func _update() -> void:
 		var connection := connections[index]
 		var split_flow_rate := flow_rate / (size - index)
 
-		connection.pressure = 0
+		connection.pressure = isolated_pressure / (size - connections_input_output_divider)
 		if split_flow_rate > connection.allowed_flow_rate:
-			connection.pressure = split_flow_rate - connection.allowed_flow_rate
+			connection.pressure += split_flow_rate - connection.allowed_flow_rate
 			split_flow_rate = connection.allowed_flow_rate
 		
 		connection.set_relative_flow_rate(self, split_flow_rate)
