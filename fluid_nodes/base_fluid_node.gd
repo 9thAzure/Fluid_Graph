@@ -150,6 +150,7 @@ func _handle_backflow() -> void:
 	# 2 options as I see it, we stop flow of a pipe one by one or slow down all of them. Going with the second option
 	
 	var inflowing_rate := 0.0
+	var inflowing_pressure := 0.0
 	for i in connections_input_output_divider:
 		var connection := connections[i]
 		var flow := connection.get_relative_flow_rate(self)
@@ -157,13 +158,20 @@ func _handle_backflow() -> void:
 			continue
 
 		inflowing_rate += -flow
+		inflowing_pressure += connection.pressure
+	inflowing_pressure += inflowing_rate
 	
-	var reduction_rate := extra_flow_rate / inflowing_rate
+	var proportion_pressure_as_limit := (inflowing_rate - extra_flow_rate) / inflowing_pressure
 	for i in connections_input_output_divider:
 		var connection := connections[i]
-		connection.pressure += abs(connection.flow_rate) * reduction_rate
-		connection.allowed_flow_rate += abs(connection.flow_rate) * (1 - reduction_rate)
-		connection.flow_rate = connection.flow_rate * (1 - reduction_rate)
+		var flow := connection.get_relative_flow_rate(self)
+		if flow >= 0.0:
+			continue
+
+		var pressure = flow + connection.pressure
+		connection.allowed_flow_rate = pressure * proportion_pressure_as_limit
+		connection.set_relative_flow_rate(self, pressure * proportion_pressure_as_limit)
+		connection.pressure = pressure - connection.allowed_flow_rate
 		connection.get_connecting_node(self).queue_update()
 
 func _request_more_flow() -> void:
