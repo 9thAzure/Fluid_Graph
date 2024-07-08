@@ -18,36 +18,31 @@ func _update() -> void:
 
 	var flow_rate := production_rate
 	var size := connections.size()
-	for i in size:
+	# TODO: deal with inflowing connections
+	for i in connections_input_output_divider:
 		var connection := connections[i]
-		var split_flow_rate := flow_rate / (size - i)
-		if i >= connections_input_output_divider:
-			split_flow_rate -= connection.flow_friction
-			connection.set_relative_flow_rate(self, split_flow_rate)
-			flow_rate -= split_flow_rate
-			connection.get_connecting_node(self).queue_update()
-			continue
+		connection.allowed_flow_rate = 0
 
-		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
-		var ingoing_pressure := ingoing_flow_rate + connection.flow_friction
-		if ingoing_pressure >= split_flow_rate: # inflowing flows are negative
-			connection.flow_rate = 0
-			connection.flow_friction = ingoing_pressure
-			connection.get_connecting_node(self).queue_update()
-			continue
+	extra_flow_rate = 0
+
+	for i in size - connections_input_output_divider:
+		var index := connections_input_output_divider + i
+		var connection := connections[index]
+		var split_flow_rate := flow_rate / (size - index)
+
+		connection.pressure = 0
+		if split_flow_rate > connection.allowed_flow_rate:
+			connection.pressure = split_flow_rate - connection.allowed_flow_rate
+			split_flow_rate = connection.allowed_flow_rate
 		
-		# ingoing flow that is less thant split_flow_rate
-		split_flow_rate -= ingoing_pressure
-		connection.flow_friction = ingoing_pressure
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
 		connection.get_connecting_node(self).queue_update()
-	
-	extra_flow_rate = flow_rate
-	if is_zero_approx(extra_flow_rate):
+
+	extra_flow_rate += flow_rate
+	if not is_zero_approx(extra_flow_rate):
+		_handle_backflow()
 		return
-	
-	_handle_backflow()
 
 func _handle_backflow() -> void:
 	print("source overflow by %s units/s" % extra_flow_rate)
