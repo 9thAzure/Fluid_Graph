@@ -18,15 +18,6 @@ var connections : Array[FluidConnection] = []
 
 var connections_input_output_divider := -1
 
-var previous_position := position
-func _process(_delta) -> void:
-	if position.is_equal_approx(previous_position):
-		return
-
-	previous_position = position
-	for connection in connections:
-		connection.queue_redraw()
-
 var current_flow_rate := 0.0
 var extra_flow_rate := 0.0
 
