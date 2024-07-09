@@ -5,7 +5,11 @@ var producers : Array[BaseProducer] = []
 var consumers : Array[BaseConsumer] = []
 var routers : Array[BaseRouter] = []
 
+# Debug testing tools
 signal fluid_update()
+
+@export
+var is_disabled := false
 
 @export
 var controlled_update := false
@@ -46,6 +50,11 @@ func _on_child_exiting_tree(node : Node) -> void:
 			routers.erase(node)
 
 func _ready() -> void:
+	if is_disabled:
+		process_mode = Node.PROCESS_MODE_DISABLED
+		modulate = Color(1,1,1, 0.5)
+		return
+
 	update()
 
 func update() -> void:

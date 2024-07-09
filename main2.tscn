@@ -10,6 +10,7 @@
 
 [node name="FluidGraph" type="Node2D" parent="."]
 script = ExtResource("1_72wvv")
+is_disabled = true
 
 [node name="BaseProducer" type="Node2D" parent="FluidGraph"]
 self_modulate = Color(0, 1, 1, 1)
