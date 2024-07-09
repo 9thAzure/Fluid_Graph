@@ -164,9 +164,9 @@ func _handle_backflow() -> void:
 		if flow >= 0.0:
 			continue
 
-		var pressure = flow + connection.pressure
+		var pressure = -flow + connection.pressure
 		connection.allowed_flow_rate = pressure * proportion_pressure_as_limit
-		connection.set_relative_flow_rate(self, pressure * proportion_pressure_as_limit)
+		connection.set_relative_flow_rate(self, -pressure * proportion_pressure_as_limit)
 		connection.pressure = pressure - connection.allowed_flow_rate
 		connection.get_connecting_node(self).queue_update()
 
