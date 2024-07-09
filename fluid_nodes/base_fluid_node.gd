@@ -171,12 +171,11 @@ func _handle_backflow() -> void:
 		connection.get_connecting_node(self).queue_update()
 
 func _request_more_flow() -> void:
-	# TODO: reimplement
-	pass
-	# for i in connections_input_output_divider:
-	# 	var connection := connections[i]
-	# 	if is_zero_approx(connection.flow_friction):
-	# 		continue
+	# TODO: reimplement better, by knowing amount to reduce allowed_flow_rate by.
+	for i in connections_input_output_divider:
+		var connection := connections[i]
+		if connection.get_relative_flow_rate(self) > 0 or is_equal_approx(connection.allowed_flow_rate, connection.max_flow_rate):
+			continue
 		
-	# 	connection.flow_friction = 0
-	# 	connection.get_connecting_node(self).queue_update()
+		connection.reset_allowed_flow_rate()
+		connection.get_connecting_node(self).queue_update()
