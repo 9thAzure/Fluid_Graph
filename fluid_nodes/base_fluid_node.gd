@@ -37,7 +37,7 @@ func queue_update() -> void:
 
 # functions have to be sorted first input, then output
 #   input: ingoing flow rate (- relative flow)
-#     - has to further be sorted from largest relative flow rate to smallest relative flow rate
+#     - has to further be sorted from largest relative pressure to smallest relative pressure
 #  output: other flow rate
 #     - further sorted from Smallest allowed flow to largest
 
@@ -55,7 +55,7 @@ func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bo
 		return false
 	
 	if a_is_input and b_is_input:
-		return flow_rate_a < flow_rate_b # ingoing flow rates are negative, so in actuality, checking that flow_rate_a is greater
+		return (-flow_rate_a + a.pressure) > (-flow_rate_b + b.pressure) # ingoing flow rates are negative
 	
 	# both a and b are not input connections
 	return a.allowed_flow_rate < b.allowed_flow_rate
