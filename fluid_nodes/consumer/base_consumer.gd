@@ -3,7 +3,10 @@ extends BaseFluidNode
 class_name BaseConsumer
 
 @export_range(0.0, 10.0, 0.01, "or_greater", "hide_slider")
-var consumption_rate := 0.0
+var consumption_rate := 0.0:
+	set(value):
+		consumption_rate = value
+		queue_update()
 
 var efficiency := 1.0
 
