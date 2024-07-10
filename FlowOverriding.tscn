@@ -49,6 +49,7 @@ node2 = NodePath("../BaseRouter")
 [node name="FluidGraph2" type="Node2D" parent="."]
 position = Vector2(585, 0)
 script = ExtResource("1_e377a")
+is_disabled = true
 
 [node name="BaseProducer" type="Node2D" parent="FluidGraph2"]
 self_modulate = Color(0, 1, 1, 1)
@@ -103,6 +104,7 @@ node2 = NodePath("../BaseRouter")
 [node name="FluidGraph3" type="Node2D" parent="."]
 position = Vector2(1, 299)
 script = ExtResource("1_e377a")
+is_disabled = true
 
 [node name="BaseProducer" type="Node2D" parent="FluidGraph3"]
 self_modulate = Color(0, 1, 1, 1)
@@ -167,3 +169,57 @@ node2 = NodePath("../BaseConsumer")
 [node name="FluidConnection7" parent="FluidGraph3" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_mij2a")]
 node1 = NodePath("../BaseRouter3")
 node2 = NodePath("../BaseConsumer2")
+
+[node name="FluidGraph4" type="Node2D" parent="."]
+position = Vector2(592, 310)
+script = ExtResource("1_e377a")
+
+[node name="BaseProducer" type="Node2D" parent="FluidGraph4"]
+self_modulate = Color(0, 1, 1, 1)
+position = Vector2(37, 38)
+script = ExtResource("2_12gnf")
+production_rate = 50.0
+
+[node name="BaseProducer2" type="Node2D" parent="FluidGraph4"]
+self_modulate = Color(0, 1, 1, 1)
+position = Vector2(41, 135)
+script = ExtResource("2_12gnf")
+production_rate = 5.0
+
+[node name="BaseRouter" type="Node2D" parent="FluidGraph4"]
+position = Vector2(195, 90)
+script = ExtResource("3_wggj6")
+
+[node name="BaseRouter2" type="Node2D" parent="FluidGraph4"]
+position = Vector2(101, 143)
+script = ExtResource("3_wggj6")
+
+[node name="BaseRouter3" type="Node2D" parent="FluidGraph4"]
+position = Vector2(149, 107)
+script = ExtResource("3_wggj6")
+
+[node name="BaseConsumer" type="Node2D" parent="FluidGraph4"]
+self_modulate = Color(1, 0, 0, 1)
+position = Vector2(357, 93)
+script = ExtResource("4_spv6l")
+consumption_rate = 55.0
+
+[node name="FluidConnection" parent="FluidGraph4" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_mij2a")]
+node1 = NodePath("../BaseProducer")
+node2 = NodePath("../BaseRouter")
+
+[node name="FluidConnection2" parent="FluidGraph4" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_mij2a")]
+node1 = NodePath("../BaseProducer2")
+node2 = NodePath("../BaseRouter2")
+
+[node name="FluidConnection5" parent="FluidGraph4" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_mij2a")]
+node1 = NodePath("../BaseRouter2")
+node2 = NodePath("../BaseRouter3")
+
+[node name="FluidConnection4" parent="FluidGraph4" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_mij2a")]
+node1 = NodePath("../BaseRouter3")
+node2 = NodePath("../BaseRouter")
+
+[node name="FluidConnection3" parent="FluidGraph4" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_mij2a")]
+node1 = NodePath("../BaseConsumer")
+node2 = NodePath("../BaseRouter")
