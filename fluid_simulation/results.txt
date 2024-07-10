@@ -1,0 +1,12 @@
+idk why I did this, its sort of obvious.
+
+normally, some of the balls from the weak producer will still be able to go through; The flow reverse, just becomes slow.
+
+If the strong force is significantly strong enough, it will still block the flow, forcing the weak producer to use its restrictive connection exclusively. 
+However, this restrictive path still technically has infinite throughput. I would still expect for it to reverse (removing the deleter causes this to occur)
+
+If the weak force is especially weak, the above happens again (though it shouldn't reverse as the restrictive path can handle to throughput)
+
+
+Basically, a producer should try to force flow through other paths. If it can't, it should start brute forcing its way through the input connections.
+However, if it weakens, it should do so drastically.

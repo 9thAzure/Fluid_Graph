@@ -6,6 +6,8 @@
 radius = 15.0
 
 [node name="Deleter" type="Area2D"]
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("1_i2coo")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
