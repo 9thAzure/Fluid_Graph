@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://5imucjoxxoun"]
+
+[ext_resource type="PackedScene" uid="uid://d024tdio7gfn5" path="res://fluid_simulation/spawner.tscn" id="1_5ky8p"]
+[ext_resource type="PackedScene" uid="uid://ilctvtw6odtv" path="res://fluid_simulation/deleter.tscn" id="2_8q5ls"]
+
+[node name="Main" type="StaticBody2D"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+position = Vector2(0, 12.69)
+polygon = PackedVector2Array(417, 529.31, 482, 532.31, 502, 285.31, 693, 76.31, 644, 24.31, 471, 220.31, 224, 2.31, 183, 47.31, 428, 282.31, -1, 323.31, 4, -20.69, 1167, -6.69, 1144, 628.31, -5, 653.31, -5, 327.31, 421, 290.31)
+one_way_collision_margin = 81.1
+
+[node name="Spawner" parent="." instance=ExtResource("1_5ky8p")]
+position = Vector2(214, 51)
+spawn_rate = 2.0
+
+[node name="Spawner2" parent="." instance=ExtResource("1_5ky8p")]
+position = Vector2(643, 85)
+spawn_rate = 8.0
+
+[node name="Deleter" parent="." instance=ExtResource("2_8q5ls")]
+position = Vector2(456, 501)

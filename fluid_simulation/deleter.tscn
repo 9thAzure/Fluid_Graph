@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://ilctvtw6odtv"]
+
+[ext_resource type="Script" path="res://fluid_simulation/deleter.gd" id="1_i2coo"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7wbpn"]
+radius = 15.0
+
+[node name="Deleter" type="Area2D"]
+script = ExtResource("1_i2coo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_7wbpn")
+debug_color = Color(0, 0, 0, 0.419608)
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
