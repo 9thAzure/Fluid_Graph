@@ -21,7 +21,18 @@ func _update() -> void:
 	# TODO: deal with inflowing connections
 	for i in connections_input_output_divider:
 		var connection := connections[i]
+		var split_flow_rate := flow_rate / (size - i)
+
+		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
+		var ingoing_pressure := ingoing_flow_rate + connection.pressure
+		if ingoing_pressure < split_flow_rate:
+			push_back_overridden_flows(i)
+			connections_input_output_divider = i
+			break
+
 		connection.allowed_flow_rate = 0
+		connection.get_connecting_node(self).queue_update()
+
 
 	extra_flow_rate = 0
 
