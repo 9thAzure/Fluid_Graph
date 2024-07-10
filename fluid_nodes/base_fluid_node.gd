@@ -68,6 +68,22 @@ func sort_connections() -> void:
 			return
 	connections_input_output_divider = connections.size()
 
+func push_back_overridden_flows(start_i : int) -> void:
+	var jump_distance := connections_input_output_divider - start_i
+
+	@warning_ignore("integer_division")
+	var jump_recursion_amount := (connections.size() - connections_input_output_divider) / jump_distance
+	for i1 in jump_distance:
+		var index1 := start_i + i1
+		var connection := connections[start_i + i1]
+		for i2 in jump_recursion_amount:
+			var index2 := index1 + i2 * jump_distance
+			connections[index2] = connections[index2 + jump_distance]
+		
+		connection.reset_allowed_flow_rate()
+		connections[index1 + jump_recursion_amount * jump_distance] = connection
+
+
 func update() -> void:
 	is_queued = false
 	_update()
@@ -86,6 +102,7 @@ func _update() -> void:
 		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
 		var ingoing_pressure := ingoing_flow_rate + connection.pressure
 		if ingoing_pressure < split_flow_rate:
+			push_back_overridden_flows(i)
 			connections_input_output_divider = i
 			break
 
