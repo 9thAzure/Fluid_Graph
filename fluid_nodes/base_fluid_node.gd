@@ -94,9 +94,9 @@ func _update() -> void:
 			continue
 		
 		# ingoing flow that is less thant split_flow_rate
-		split_flow_rate -= ingoing_flow_rate
-		connection.allowed_flow_rate = split_flow_rate
-		connection.pressure = ingoing_flow_rate
+
+		connection.pressure = isolated_pressure / (size - i)
+		isolated_pressure -= connection.pressure
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
 		connection.get_connecting_node(self).queue_update()
