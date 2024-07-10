@@ -98,10 +98,11 @@ func _update() -> void:
 	for i in connections_input_output_divider:
 		var connection := connections[i]
 		var split_flow_rate := flow_rate / (size - i)
+		var split_pressure := split_flow_rate + isolated_pressure / (size - i)
 
 		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
 		var ingoing_pressure := ingoing_flow_rate + connection.pressure
-		if ingoing_pressure < split_flow_rate:
+		if ingoing_pressure < split_pressure:
 			push_back_overridden_flows(i)
 			connections_input_output_divider = i
 			break
