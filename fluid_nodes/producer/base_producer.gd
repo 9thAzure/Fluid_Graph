@@ -52,7 +52,7 @@ func _update() -> void:
 		if split_flow_rate > connection.allowed_flow_rate:
 			connection.pressure = split_flow_rate - connection.allowed_flow_rate
 			split_flow_rate = connection.allowed_flow_rate
-		elif connection.is_allowed_flow_rate_default():
+		elif pressure > 0 and connection.is_allowed_flow_rate_default():
 			connection.allowed_flow_rate = split_flow_rate
 		
 		connection.set_relative_flow_rate(self, split_flow_rate)
