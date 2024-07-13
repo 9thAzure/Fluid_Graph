@@ -41,6 +41,9 @@ func _ready() -> void:
 func reset_allowed_flow_rate() -> void:
 	allowed_flow_rate = max_flow_rate
 
+func is_allowed_flow_rate_default() -> bool:
+	return is_equal_approx(allowed_flow_rate, max_flow_rate)
+
 func is_complete() -> bool:
 	return node1 != null and node2 != null
 
