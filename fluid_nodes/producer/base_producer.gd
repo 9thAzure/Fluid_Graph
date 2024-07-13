@@ -35,8 +35,10 @@ func _update() -> void:
 			connections_input_output_divider = i
 			break
 
-		# connection.allowed_flow_rate = split_flow_rate
-		# connection.get_connecting_node(self).queue_update()
+		connection.pressure += connection.flow_rate
+		connection.flow_rate = 0
+		connection.allowed_flow_rate = 0
+		connection.get_connecting_node(self).queue_update()
 
 
 	extra_flow_rate = 0
