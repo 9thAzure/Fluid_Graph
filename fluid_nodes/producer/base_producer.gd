@@ -35,7 +35,7 @@ func _update() -> void:
 			connections_input_output_divider = i
 			break
 
-		connection.pressure += connection.flow_rate
+		connection.pressure += absf(connection.flow_rate)
 		connection.flow_rate = 0
 		connection.allowed_flow_rate = 0
 		connection.get_connecting_node(self).queue_update()
@@ -70,4 +70,5 @@ func _handle_backflow() -> void:
 	var connection := connections[connections_input_output_divider - 1]
 	var ingoing_pressure := absf(connection.flow_rate) + connection.pressure
 	pressure = ingoing_pressure * (connections.size() - connections_input_output_divider + 1) - production_rate + 1
+	connection.reset_allowed_flow_rate()
 	queue_update()
