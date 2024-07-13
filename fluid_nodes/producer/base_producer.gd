@@ -78,6 +78,6 @@ func _handle_backflow() -> void:
 	var connection := connections[index]
 	var ingoing_pressure := absf(connection.flow_rate) + connection.pressure
 	pressure = ingoing_pressure * (connections.size() - index) - production_rate + extra_flow_rate
-	connection.reset_allowed_flow_rate()
+	connection.allowed_flow_rate = minf(extra_flow_rate, connection.max_flow_rate)
 	queue_update()
 
