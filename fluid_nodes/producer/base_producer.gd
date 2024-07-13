@@ -21,16 +21,16 @@ func _update() -> void:
 
 	var flow_rate := production_rate
 	var size := connections.size()
-	var isolated_pressure := pressure
+	# var isolated_pressure := pressure
 	# TODO: deal with inflowing connections
 	for i in connections_input_output_divider:
 		var connection := connections[i]
 		var split_flow_rate := flow_rate / (size - i)
-		var split_pressure := split_flow_rate + isolated_pressure / (size - i)
+		# var split_pressure := split_flow_rate + isolated_pressure / (size - i)
 
 		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
 		var ingoing_pressure := ingoing_flow_rate + connection.flow_pressure
-		if ingoing_pressure < split_pressure:
+		if ingoing_pressure < split_flow_rate + pressure:
 			push_back_overridden_flows(i)
 			connections_input_output_divider = i
 			break
@@ -49,7 +49,8 @@ func _update() -> void:
 		var connection := connections[index]
 		var split_flow_rate := flow_rate / (size - index)
 
-		connection.flow_pressure = isolated_pressure / (size - connections_input_output_divider)
+		connection.flow_pressure = 0
+		connection.source_pressure = pressure
 		if split_flow_rate > connection.allowed_flow_rate:
 			connection.flow_pressure = split_flow_rate - connection.allowed_flow_rate
 			split_flow_rate = connection.allowed_flow_rate
@@ -81,7 +82,7 @@ func _handle_backflow() -> void:
 	
 	var connection := connections[index]
 	var ingoing_pressure := absf(connection.flow_rate) + connection.flow_pressure
-	pressure = ingoing_pressure * (connections.size() - index) - production_rate + extra_flow_rate
+	pressure = ingoing_pressure - production_rate + extra_flow_rate
 	connection.allowed_flow_rate = minf(extra_flow_rate, connection.max_flow_rate)
 	queue_update()
 
