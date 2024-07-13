@@ -35,6 +35,8 @@ var allowed_flow_rate := 0.0
 
 var flow_pressure := 0.0
 
+var source_pressure := 0.0
+
 func _ready() -> void:
 	reset_allowed_flow_rate()
 
