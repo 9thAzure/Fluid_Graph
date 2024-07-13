@@ -43,6 +43,7 @@ func _update() -> void:
 
 	extra_flow_rate = 0
 
+	var output_flow_below_limit := false
 	for i in size - connections_input_output_divider:
 		var index := connections_input_output_divider + i
 		var connection := connections[index]
@@ -52,8 +53,8 @@ func _update() -> void:
 		if split_flow_rate > connection.allowed_flow_rate:
 			connection.pressure = split_flow_rate - connection.allowed_flow_rate
 			split_flow_rate = connection.allowed_flow_rate
-		elif pressure > 0 and connection.is_allowed_flow_rate_default():
-			connection.allowed_flow_rate = split_flow_rate
+		elif pressure > 0 and not connection.is_allowed_flow_rate_default() and split_flow_rate < connection.allowed_flow_rate:
+			output_flow_below_limit = true
 		
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
@@ -64,13 +65,16 @@ func _update() -> void:
 		_handle_backflow()
 		return
 
+	if output_flow_below_limit:
+		_request_more_flow()
+
 func _handle_backflow() -> void:
 	print("source overflow by %s units/s" % extra_flow_rate)
 	var index := -1
 	for i in connections.size():
 		if not is_zero_approx(connections[i].allowed_flow_rate):
-			index = i - 1
 			break
+		index = i
 	
 	if index == -1:
 		return
@@ -81,3 +85,6 @@ func _handle_backflow() -> void:
 	connection.allowed_flow_rate = minf(extra_flow_rate, connection.max_flow_rate)
 	queue_update()
 
+func _request_more_flow() -> void:
+	pressure = 0
+	queue_update()
