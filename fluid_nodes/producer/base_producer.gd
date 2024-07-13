@@ -35,8 +35,8 @@ func _update() -> void:
 			connections_input_output_divider = i
 			break
 
-		connection.allowed_flow_rate = split_flow_rate
-		connection.get_connecting_node(self).queue_update()
+		# connection.allowed_flow_rate = split_flow_rate
+		# connection.get_connecting_node(self).queue_update()
 
 
 	extra_flow_rate = 0
@@ -62,3 +62,10 @@ func _update() -> void:
 
 func _handle_backflow() -> void:
 	print("source overflow by %s units/s" % extra_flow_rate)
+	if connections_input_output_divider == 0:
+		return
+	
+	var connection := connections[connections_input_output_divider - 1]
+	var ingoing_pressure := absf(connection.flow_rate) + connection.pressure
+	pressure = ingoing_pressure * (connections.size() - connections_input_output_divider + 1)
+	queue_update()
