@@ -55,7 +55,7 @@ func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bo
 		return false
 	
 	if a_is_input and b_is_input:
-		return (-flow_rate_a + a.pressure) > (-flow_rate_b + b.pressure) # ingoing flow rates are negative
+		return (-flow_rate_a + a.flow_pressure) > (-flow_rate_b + b.flow_pressure) # ingoing flow rates are negative
 	
 	# both a and b are not input connections
 	return a.allowed_flow_rate < b.allowed_flow_rate
@@ -101,14 +101,14 @@ func _update() -> void:
 		var split_pressure := split_flow_rate + isolated_pressure / (size - i)
 
 		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
-		var ingoing_pressure := ingoing_flow_rate + connection.pressure
+		var ingoing_pressure := ingoing_flow_rate + connection.flow_pressure
 		if ingoing_pressure < split_pressure:
 			push_back_overridden_flows(i)
 			connections_input_output_divider = i
 			break
 
 		flow_rate += ingoing_flow_rate 
-		isolated_pressure += connection.pressure
+		isolated_pressure += connection.flow_pressure
 		input_restricts_flow = input_restricts_flow or connection.allowed_flow_rate < connection.max_flow_rate # no or-assignment :(
 
 	# TODO: testing, may not be necessary
@@ -132,9 +132,9 @@ func _update() -> void:
 		var connection := connections[index]
 		var split_flow_rate := flow_rate / (size - index)
 
-		connection.pressure = isolated_pressure / (size - connections_input_output_divider)
+		connection.flow_pressure = isolated_pressure / (size - connections_input_output_divider)
 		if split_flow_rate > connection.allowed_flow_rate:
-			connection.pressure += split_flow_rate - connection.allowed_flow_rate
+			connection.flow_pressure += split_flow_rate - connection.allowed_flow_rate
 			split_flow_rate = connection.allowed_flow_rate
 		elif input_restricts_flow and split_flow_rate < connection.allowed_flow_rate:
 			output_flow_below_limit = true
@@ -164,7 +164,7 @@ func _handle_backflow() -> void:
 			continue
 
 		inflowing_rate += -flow
-		inflowing_pressure += connection.pressure
+		inflowing_pressure += connection.flow_pressure
 	inflowing_pressure += inflowing_rate
 	
 	var proportion_pressure_as_limit := (inflowing_rate - extra_flow_rate) / inflowing_pressure
@@ -174,10 +174,10 @@ func _handle_backflow() -> void:
 		if flow >= 0.0:
 			continue
 
-		var pressure = -flow + connection.pressure
+		var pressure = -flow + connection.flow_pressure
 		connection.allowed_flow_rate = pressure * proportion_pressure_as_limit
 		connection.set_relative_flow_rate(self, -pressure * proportion_pressure_as_limit)
-		connection.pressure = pressure - connection.allowed_flow_rate
+		connection.flow_pressure = pressure - connection.allowed_flow_rate
 		connection.get_connecting_node(self).queue_update()
 
 func _request_more_flow() -> void:

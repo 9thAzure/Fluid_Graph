@@ -33,7 +33,7 @@ var flow_rate := 0.0
 
 var allowed_flow_rate := 0.0
 
-var pressure := 0.0
+var flow_pressure := 0.0
 
 func _ready() -> void:
 	reset_allowed_flow_rate()
@@ -71,18 +71,18 @@ func set_relative_flow_rate(source_node : BaseFluidNode, value : float) -> void:
 
 func get_relative_pressure(source_node : BaseFluidNode) -> float:
 	if is_same(source_node, node1):
-		return pressure
+		return flow_pressure
 	
 	assert(is_same(source_node, node2))
-	return -pressure
+	return -flow_pressure
 
 func set_relative_pressure(source_node : BaseFluidNode, value : float) -> void:
 	if is_same(source_node, node1):
-		pressure = value
+		flow_pressure = value
 		return
 	
 	assert(is_same(source_node, node2))
-	pressure = -value
+	flow_pressure = -value
 
 func _draw() -> void:
 	if not is_complete():
