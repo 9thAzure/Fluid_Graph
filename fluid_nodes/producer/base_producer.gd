@@ -66,11 +66,18 @@ func _update() -> void:
 
 func _handle_backflow() -> void:
 	print("source overflow by %s units/s" % extra_flow_rate)
-	if connections_input_output_divider == 0:
+	var index := -1
+	for i in connections.size():
+		if not is_zero_approx(connections[i].allowed_flow_rate):
+			index = i - 1
+			break
+	
+	if index == -1:
 		return
 	
-	var connection := connections[connections_input_output_divider - 1]
+	var connection := connections[index]
 	var ingoing_pressure := absf(connection.flow_rate) + connection.pressure
-	pressure = ingoing_pressure * (connections.size() - connections_input_output_divider + 1) - production_rate + 1
+	pressure = ingoing_pressure * (connections.size() - index) - production_rate + extra_flow_rate
 	connection.reset_allowed_flow_rate()
 	queue_update()
+
