@@ -93,7 +93,13 @@ func push_back_overridden_flows(start_i : int, length : int) -> void:
 		while index1 < size:
 			connections[index1 - length] = connections[index1]
 			index1 += length
+		pushed_back_connection.reset_allowed_flow_rate()
 		connections[index1 - length] = pushed_back_connection
+	
+	if start_i < blocked_connection_index:
+		blocked_connection_index = maxi(start_i, blocked_connection_index - length)
+	if start_i < output_connection_index:
+		output_connection_index = maxi(start_i, output_connection_index - length)
 
 func update() -> void:
 	is_queued = false
@@ -107,7 +113,7 @@ func _update() -> void:
 	var flow_pressure := 0.0
 	var source_pressure := 0.0
 	var input_restricts_flow := false
-	for i in connections_input_output_divider:
+	for i in blocked_connection_index: # input_connections
 		var connection := connections[i]
 		var divider := size - i
 		var split_flow_rate := flow_rate / divider
@@ -116,8 +122,8 @@ func _update() -> void:
 		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
 		var ingoing_pressure := ingoing_flow_rate + connection.flow_pressure + connection.source_pressure
 		if ingoing_pressure < split_pressure:
-			push_back_overridden_flows(i)
-			connections_input_output_divider = i
+			var length := blocked_connection_index - i
+			push_back_overridden_flows(i, length)
 			break
 
 		flow_rate += ingoing_flow_rate 
@@ -142,13 +148,13 @@ func _update() -> void:
 	# friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
 	# var friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
 	var output_flow_below_limit := false
-	for i in size - connections_input_output_divider:
-		var index := connections_input_output_divider + i
+	for i in size - output_connection_index:
+		var index := output_connection_index + i
 		var connection := connections[index]
 		var split_flow_rate := flow_rate / (size - index)
 
-		connection.flow_pressure = flow_pressure / (size - connections_input_output_divider)
-		connection.source_pressure = source_pressure / (size - connections_input_output_divider)
+		connection.flow_pressure = flow_pressure / (size - output_connection_index)
+		connection.source_pressure = source_pressure / (size - output_connection_index)
 		if split_flow_rate > connection.allowed_flow_rate:
 			connection.flow_pressure += split_flow_rate - connection.allowed_flow_rate
 			split_flow_rate = connection.allowed_flow_rate
@@ -176,14 +182,14 @@ func _handle_backflow() -> void:
 	
 	# var current_flow_rate := 0.0
 	var inflowing_flow_pressure := 0.0
-	for i in connections_input_output_divider:
+	for i in blocked_connection_index: # input connections
 		var connection := connections[i]
 		inflowing_flow_pressure += connection.flow_pressure
 
 	inflowing_flow_pressure += current_flow_rate
 	
 	var proportion_pressure_as_limit := (current_flow_rate - extra_flow_rate) / inflowing_flow_pressure
-	for i in connections_input_output_divider:
+	for i in blocked_connection_index:
 		var connection := connections[i]
 		var flow := connection.get_relative_flow_rate(self)
 		if flow >= 0.0:
@@ -197,7 +203,7 @@ func _handle_backflow() -> void:
 
 func _request_more_flow() -> void:
 	# TODO: reimplement better, by knowing amount to reduce allowed_flow_rate by.
-	for i in connections_input_output_divider:
+	for i in blocked_connection_index: # input connections
 		var connection := connections[i]
 		if connection.get_relative_flow_rate(self) > 0 or is_equal_approx(connection.allowed_flow_rate, connection.max_flow_rate):
 			continue
