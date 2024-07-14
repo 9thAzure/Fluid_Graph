@@ -25,6 +25,7 @@ func _update() -> void:
 			continue
 
 		inflowing_rate += flow_rate
+	current_flow_rate = inflowing_rate
 
 	if inflowing_rate < consumption_rate:
 		efficiency = inflowing_rate / consumption_rate
