@@ -175,16 +175,30 @@ func _update() -> void:
 	
 func _handle_backflow() -> void:
 	# Try to override completely blocked flows, if their pressure is different from attempted pressure flow
-	# we would have to reconstruct the initial scenario. Multiple blocked flows will be an issue without changing sorting
+	# that's just extra_flow_rate
 
 	# to handle backflow, input sources have to be capped
 	# 2 options as I see it, we stop flow of a pipe one by one or slow down all of them. Going with the second option
 	
 	# var current_flow_rate := 0.0
 	var inflowing_flow_pressure := 0.0
+	var inflowing_source_pressure := 0.0
 	for i in blocked_connection_index: # input connections
 		var connection := connections[i]
 		inflowing_flow_pressure += connection.flow_pressure
+		inflowing_source_pressure += connection.source_pressure
+	
+	var output_connection_count := connections.size() - output_connection_index
+	var predicted_pressure := extra_flow_rate + inflowing_flow_pressure / (output_connection_count + 1) + inflowing_source_pressure / (output_connection_count + 1) 
+	for i in output_connection_index - blocked_connection_index:
+		var index := output_connection_index - i - 1
+		var connection := connections[index]
+		if connection.flow_pressure + connection.source_pressure >= predicted_pressure:
+			continue
+		
+		connection.allowed_flow_rate = extra_flow_rate
+		queue_update()
+		return
 
 	inflowing_flow_pressure += current_flow_rate
 	
