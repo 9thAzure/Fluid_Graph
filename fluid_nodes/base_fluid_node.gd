@@ -36,10 +36,13 @@ func queue_update() -> void:
 	update()
 
 # functions have to be sorted first input, then output
-#   input: ingoing flow rate (- relative flow)
-#     - has to further be sorted from largest relative pressure to smallest relative pressure
+#  input: ingoing flow rate (- relative flow)
+#    - has to further be sorted from largest relative pressure to smallest relative pressure
+#  blocked (allowed_flow_rate == 0):
+#    - further sorted by pressure, largest to smallest (like inputs)
+#    - this has overlap with both other types of connections
 #  output: other flow rate
-#     - further sorted from Smallest allowed flow to largest
+#    - further sorted from Smallest allowed flow to largest
 
 # if true, a and b is sorted
 func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bool:
@@ -54,10 +57,11 @@ func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bo
 	if b_is_input and not a_is_input:
 		return false
 	
-	if a_is_input and b_is_input:
-		return (-flow_rate_a + a.flow_pressure) > (-flow_rate_b + b.flow_pressure) # ingoing flow rates are negative
+	if a_is_input and b_is_input\
+		or is_zero_approx(a.allowed_flow_rate) and is_zero_approx(b.allowed_flow_rate):
+		return (-flow_rate_a + a.flow_pressure + a.source_pressure) > (-flow_rate_b + b.flow_pressure + b.source_pressure) # ingoing flow rates are negative
 	
-	# both a and b are not input connections
+	# both a and b are not input connections nor blocked connections
 	return a.allowed_flow_rate < b.allowed_flow_rate
 
 func sort_connections() -> void:
@@ -157,6 +161,9 @@ func _update() -> void:
 		_request_more_flow()
 	
 func _handle_backflow() -> void:
+	# Try to override completely blocked flows, if their pressure is different from attempted pressure flow
+	# we would have to reconstruct the initial scenario. Multiple blocked flows will be an issue without changing sorting
+
 	# to handle backflow, input sources have to be capped
 	# 2 options as I see it, we stop flow of a pipe one by one or slow down all of them. Going with the second option
 	
