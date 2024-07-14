@@ -115,7 +115,7 @@ func _update() -> void:
 	var input_restricts_flow := false
 	for i in blocked_connection_index: # input_connections
 		var connection := connections[i]
-		var divider := size - i
+		var divider := size - (output_connection_index - blocked_connection_index) - i
 		var split_flow_rate := flow_rate / divider
 		var split_pressure := split_flow_rate + flow_pressure / divider + source_pressure / divider
 

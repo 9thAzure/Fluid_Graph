@@ -23,16 +23,16 @@ func _update() -> void:
 	var size := connections.size()
 	# var isolated_pressure := pressure
 	# TODO: deal with inflowing connections
-	for i in connections_input_output_divider:
+	for i in blocked_connection_index:
 		var connection := connections[i]
-		var split_flow_rate := flow_rate / (size - i)
+		var divider := size - (output_connection_index - blocked_connection_index) - i
+		var split_flow_rate := flow_rate / divider
 		# var split_pressure := split_flow_rate + isolated_pressure / (size - i)
 
 		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
 		var ingoing_pressure := ingoing_flow_rate + connection.flow_pressure
 		if ingoing_pressure < split_flow_rate + pressure:
-			push_back_overridden_flows(i)
-			connections_input_output_divider = i
+			push_back_overridden_flows(i, blocked_connection_index - i)
 			break
 
 		connection.flow_pressure += absf(connection.flow_rate)
@@ -44,8 +44,8 @@ func _update() -> void:
 	extra_flow_rate = 0
 
 	var output_flow_below_limit := false
-	for i in size - connections_input_output_divider:
-		var index := connections_input_output_divider + i
+	for i in size - output_connection_index:
+		var index := output_connection_index + i
 		var connection := connections[index]
 		var split_flow_rate := flow_rate / (size - index)
 
