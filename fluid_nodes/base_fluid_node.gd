@@ -78,7 +78,7 @@ func sort_connections() -> void:
 
 	for i in size - blocked_connection_index:
 		var index := i + blocked_connection_index
-		if is_zero_approx(connections[index].allowed_flow_rate):
+		if not is_zero_approx(connections[index].allowed_flow_rate):
 			output_connection_index = index
 
 
