@@ -16,7 +16,9 @@ func _draw() -> void:
 @export
 var connections : Array[FluidConnection] = []
 
-var connections_input_output_divider := -1
+# var connections_input_output_divider := -1
+var blocked_connection_index := -1
+var output_connection_index := -1
 
 var current_flow_rate := 0.0
 var extra_flow_rate := 0.0
@@ -66,27 +68,32 @@ func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bo
 
 func sort_connections() -> void:
 	connections.sort_custom(_custom_connection_comparer)
-	for i in connections.size():
+	var size := connections.size()
+	blocked_connection_index = size
+	output_connection_index = size
+	for i in size:
 		if connections[i].get_relative_flow_rate(self) >= 0.0:
-			connections_input_output_divider = i
-			return
-	connections_input_output_divider = connections.size()
+			blocked_connection_index = i
+			break
 
-func push_back_overridden_flows(start_i : int) -> void:
-	var jump_distance := connections_input_output_divider - start_i
+	for i in size - blocked_connection_index:
+		var index := i + blocked_connection_index
+		if is_zero_approx(connections[index].allowed_flow_rate):
+			output_connection_index = index
 
-	@warning_ignore("integer_division")
-	var jump_recursion_amount := (connections.size() - connections_input_output_divider) / jump_distance
-	for i1 in jump_distance:
+
+func push_back_overridden_flows(start_i : int, length : int) -> void:
+	# the order that the pushed back connections don't matter
+
+	var size := connections.size()
+	for i1 in length:
 		var index1 := start_i + i1
-		var connection := connections[start_i + i1]
-		for i2 in jump_recursion_amount:
-			var index2 := index1 + i2 * jump_distance
-			connections[index2] = connections[index2 + jump_distance]
-		
-		connection.reset_allowed_flow_rate()
-		connections[index1 + jump_recursion_amount * jump_distance] = connection
-
+		var pushed_back_connection := connections[index1]
+		index1 += length
+		while index1 < size:
+			connections[index1 - length] = connections[index1]
+			index1 += length
+		connections[index1 - length] = pushed_back_connection
 
 func update() -> void:
 	is_queued = false
