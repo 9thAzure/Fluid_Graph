@@ -86,6 +86,7 @@ func sort_connections() -> void:
 		var index := i + blocked_connection_index
 		if not is_zero_approx(connections[index].allowed_flow_rate):
 			output_connection_index = index
+			break
 
 
 func push_back_overridden_flows(start_i : int, length : int) -> void:
