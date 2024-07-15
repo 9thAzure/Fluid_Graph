@@ -135,7 +135,7 @@ func _update() -> void:
 			break
 		
 		if is_equal_approx(ingoing_pressure, split_pressure):
-			connection.flow_pressure += connection.flow_rate
+			connection.flow_pressure += abs(connection.flow_rate)
 			connection.flow_rate = 0
 			connection.allowed_flow_rate = 0
 			connection.get_connecting_node(self).queue_update()
@@ -212,7 +212,7 @@ func _handle_backflow() -> void:
 	for i in output_connection_index - blocked_connection_index:
 		var index := output_connection_index - i - 1
 		var connection := connections[index]
-		if connection.flow_pressure + connection.source_pressure >= predicted_pressure:
+		if connection.flow_pressure + connection.source_pressure > predicted_pressure:
 			continue
 		
 		connection.allowed_flow_rate = extra_flow_rate

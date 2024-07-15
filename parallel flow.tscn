@@ -35,7 +35,7 @@ script = ExtResource("3_fojt5")
 self_modulate = Color(1, 0, 0, 1)
 position = Vector2(291, 43)
 script = ExtResource("4_s4tv2")
-consumption_rate = 10.0
+consumption_rate = 7.0
 
 [node name="BaseConsumer2" type="Node2D" parent="FluidGraph"]
 self_modulate = Color(1, 0, 0, 1)
