@@ -120,6 +120,7 @@ func _update() -> void:
 	var flow_pressure := 0.0
 	var source_pressure := 0.0
 	var input_restricts_flow := false
+	var new_blocked_connection_index = blocked_connection_index
 	for i in blocked_connection_index: # input_connections
 		var connection := connections[i]
 		var divider := size - (output_connection_index - blocked_connection_index) - i
@@ -132,11 +133,22 @@ func _update() -> void:
 			var length := blocked_connection_index - i
 			push_back_overridden_flows(i, length)
 			break
+		
+		if is_equal_approx(ingoing_pressure, split_pressure):
+			connection.flow_pressure += connection.flow_rate
+			connection.flow_rate = 0
+			connection.allowed_flow_rate = 0
+			connection.get_connecting_node(self).queue_update()
+			if new_blocked_connection_index > i:
+				new_blocked_connection_index = i
+			continue
 
 		flow_rate += ingoing_flow_rate 
 		flow_pressure += connection.flow_pressure
 		source_pressure += connection.source_pressure
 		input_restricts_flow = input_restricts_flow or connection.allowed_flow_rate < connection.max_flow_rate # no or-assignment :(
+	
+	blocked_connection_index = new_blocked_connection_index
 
 	# TODO: testing, may not be necessary
 	# var friction_from_backflow := connections[-1].flow_friction
