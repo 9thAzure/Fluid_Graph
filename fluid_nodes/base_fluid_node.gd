@@ -51,20 +51,26 @@ func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bo
 	var flow_rate_a := a.get_relative_flow_rate(self)
 	var flow_rate_b := b.get_relative_flow_rate(self)
 
-	var a_is_input := flow_rate_a < 0
-	var b_is_input := flow_rate_b < 0
+	var connection_type_a := get_connection_type(a)
+	var connection_type_b := get_connection_type(b)
 
-	if a_is_input and not b_is_input:
-		return true
-	if b_is_input and not a_is_input:
-		return false
-	
-	if a_is_input and b_is_input\
-		or is_zero_approx(a.allowed_flow_rate) and is_zero_approx(b.allowed_flow_rate):
-		return (-flow_rate_a + a.flow_pressure + a.source_pressure) > (-flow_rate_b + b.flow_pressure + b.source_pressure) # ingoing flow rates are negative
-	
-	# both a and b are not input connections nor blocked connections
-	return a.allowed_flow_rate < b.allowed_flow_rate
+	if connection_type_a != connection_type_b:
+		return connection_type_a < connection_type_b
+
+	# both connections are the same type here.
+	if connection_type_a == 2: # output connection
+		return a.allowed_flow_rate < b.allowed_flow_rate
+
+	return (-flow_rate_a + a.flow_pressure + a.source_pressure) > (-flow_rate_b + b.flow_pressure + b.source_pressure) # ingoing flow rates are negative
+
+
+# 0 = input connection, 1 = blocked connection, 2 = output connection.
+func get_connection_type(connection : FluidConnection) -> int:
+	if connection.get_relative_flow_rate(self) < 0:
+		return 0
+	elif is_zero_approx(connection.allowed_flow_rate):
+		return 1
+	return 2
 
 func sort_connections() -> void:
 	connections.sort_custom(_custom_connection_comparer)

@@ -104,7 +104,6 @@ node2 = NodePath("../BaseRouter")
 [node name="FluidGraph3" type="Node2D" parent="."]
 position = Vector2(1, 299)
 script = ExtResource("1_e377a")
-is_disabled = true
 
 [node name="BaseProducer" type="Node2D" parent="FluidGraph3"]
 self_modulate = Color(0, 1, 1, 1)
@@ -173,6 +172,7 @@ node2 = NodePath("../BaseConsumer2")
 [node name="FluidGraph4" type="Node2D" parent="."]
 position = Vector2(592, 310)
 script = ExtResource("1_e377a")
+is_disabled = true
 
 [node name="BaseProducer" type="Node2D" parent="FluidGraph4"]
 self_modulate = Color(0, 1, 1, 1)
