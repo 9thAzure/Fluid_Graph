@@ -150,22 +150,9 @@ func _update() -> void:
 	
 	blocked_connection_index = new_blocked_connection_index
 
-	# TODO: testing, may not be necessary
-	# var friction_from_backflow := connections[-1].flow_friction
-	# var expected_input_flow_friction := connections[-1].flow_friction * (connections.size() - connections_input_output_divider)
-
-	# friction_from_backflow *= input_flow_friction / expected_input_flow_friction
-
-	# var difference := expected_input_flow_friction - input_flow_friction
 	current_flow_rate = flow_rate
 	extra_flow_rate = 0
-	# if not is_zero_approx(difference):
-	# 	extra_flow_rate = difference
-	# 	flow_rate -= difference
-	# 	input_flow_friction += difference
-
-	# friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
-	# var friction_from_backflow = input_flow_friction / (connections.size() - connections_input_output_divider)
+	
 	var output_flow_below_limit := false
 	for i in size - output_connection_index:
 		var index := output_connection_index + i
