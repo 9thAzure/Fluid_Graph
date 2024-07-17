@@ -10,9 +10,6 @@ var production_rate := 0.0:
 		if not Engine.is_editor_hint() and is_inside_tree():
 			queue_update()
 
-# @export_range(0.0, 10.0, 0.01, "or_greater", "hide_slider")
-var pressure := 0.0
-
 func _init() -> void:
 	self_modulate = Color.CYAN
 
@@ -32,26 +29,23 @@ func _update_inputs() -> void:
 		connection.flow_rate = 0
 		connection.allowed_flow_rate = 0
 		connection.get_connecting_node(self).queue_update()
-	
+
+	blocked_connection_index = 0
 	assert(is_equal_approx(current_flow_rate, production_rate), "production_rate (%s) different from current_flow_rate (%s) | difference: %s" % [production_rate, current_flow_rate, production_rate - current_flow_rate]) 
 
 func _on_overflow() -> void:
 	print("source overflow by %s units/s" % extra_flow_rate)
-	var index := -1
-	for i in connections.size():
-		if not is_zero_approx(connections[i].allowed_flow_rate):
-			break
-		index = i
-	
+
+	var index := output_connection_index - 1
 	if index == -1:
 		return
 	
 	var connection := connections[index]
 	var ingoing_pressure := connection.flow_pressure
-	pressure = ingoing_pressure - production_rate + extra_flow_rate
+	current_source_pressure = (ingoing_pressure - production_rate + extra_flow_rate) * (connections.size() - index)
 	connection.reset_allowed_flow_rate()
 	queue_update()
 
 func _request_more_flow() -> void:
-	pressure = 0
+	current_source_pressure = 0
 	queue_update()
