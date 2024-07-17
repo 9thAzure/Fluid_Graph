@@ -171,7 +171,7 @@ func _update_inputs() -> void:
 			connection.flow_pressure += abs(connection.flow_rate)
 			connection.flow_rate = 0
 			connection.allowed_flow_rate = 0
-			connection.get_connecting_node(self).queue_update()
+			connection.queue_update_connected_node(self)
 			if blocked_connection_index > i:
 				blocked_connection_index = i
 			continue
@@ -202,7 +202,7 @@ func _update_outputs() -> void:
 		
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
-		connection.get_connecting_node(self).queue_update()
+		connection.queue_update_connected_node(self)
 
 	extra_flow_rate = flow_rate
 	
@@ -238,7 +238,7 @@ func _on_overflow() -> void:
 		connection.allowed_flow_rate = pressure * proportion_pressure_as_limit
 		connection.set_relative_flow_rate(self, -pressure * proportion_pressure_as_limit)
 		connection.flow_pressure = pressure - connection.allowed_flow_rate
-		connection.get_connecting_node(self).queue_update()
+		connection.queue_update_connected_node(self)
 
 func _request_more_flow() -> void:
 	# TODO: reimplement better, by knowing amount to reduce allowed_flow_rate by.
@@ -248,4 +248,4 @@ func _request_more_flow() -> void:
 			continue
 		
 		connection.reset_allowed_flow_rate()
-		connection.get_connecting_node(self).queue_update()
+		connection.queue_update_connected_node(self)

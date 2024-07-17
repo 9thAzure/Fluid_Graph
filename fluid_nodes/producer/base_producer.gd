@@ -28,7 +28,7 @@ func _update_inputs() -> void:
 		connection.flow_pressure += absf(connection.flow_rate)
 		connection.flow_rate = 0
 		connection.allowed_flow_rate = 0
-		connection.get_connecting_node(self).queue_update()
+		connection.queue_update_connected_node(self)
 
 	blocked_connection_index = 0
 	assert(is_equal_approx(current_flow_rate, production_rate), "production_rate (%s) different from current_flow_rate (%s) | difference: %s" % [production_rate, current_flow_rate, production_rate - current_flow_rate]) 
