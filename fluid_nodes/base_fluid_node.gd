@@ -4,11 +4,16 @@ class_name BaseFluidNode
 
 var parent_graph : FluidGraph = null
 
-@export 
+@export_range(0.0, 10.0, 0.01, "or_greater", "hide_slider")
 var node_size := 10.0:
 	set(value):
 		node_size = value
 		queue_redraw()
+
+@export_range(0.0, 10.0, 0.01, "or_greater", "hide_slider")
+var capacity :=  500
+
+var stored_amount := 0.0
 
 func _draw() -> void:
 	draw_circle(Vector2.ZERO, node_size, Color.WHITE)
@@ -107,6 +112,11 @@ func push_back_overridden_flows(start_i : int, length : int) -> void:
 		blocked_connection_index = maxi(start_i, blocked_connection_index - length)
 	if start_i < output_connection_index:
 		output_connection_index = maxi(start_i, output_connection_index - length)
+
+func _process(delta: float) -> void:
+	stored_amount += extra_flow_rate * delta
+	if stored_amount > capacity:
+		stored_amount = capacity
 
 func update() -> void:
 	is_queued = false
