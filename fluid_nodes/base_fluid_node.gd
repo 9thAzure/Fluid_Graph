@@ -31,6 +31,9 @@ var output_connection_index := -1
 var current_flow_rate := 0.0
 var extra_flow_rate := 0.0
 
+func _ready() -> void:
+	reached_capacity.connect(_handle_backflow)
+
 var is_queued := false
 func queue_update() -> void:
 	if is_queued:
@@ -191,7 +194,6 @@ func _update() -> void:
 
 	extra_flow_rate += flow_rate
 	if not is_zero_approx(extra_flow_rate):
-		_handle_backflow()
 		return
 	
 	if output_flow_below_limit:

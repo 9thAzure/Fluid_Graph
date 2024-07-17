@@ -63,7 +63,6 @@ func _update() -> void:
 
 	extra_flow_rate += flow_rate
 	if not is_zero_approx(extra_flow_rate):
-		_handle_backflow()
 		return
 
 	if output_flow_below_limit:
