@@ -18,6 +18,8 @@ var capacity :=  500
 
 var stored_amount := 0.0
 
+var extra_flow_rate := 0.0
+
 ## Emitted when stored liquid has met capacity.
 signal reached_capacity()
 
@@ -29,7 +31,8 @@ var blocked_connection_index := -1
 var output_connection_index := -1
 
 var current_flow_rate := 0.0
-var extra_flow_rate := 0.0
+var current_flow_pressure := 0.0
+var current_source_pressure := 0.0
 
 func _ready() -> void:
 	reached_capacity.connect(_on_overflow)
