@@ -68,7 +68,7 @@ func _update() -> void:
 	if output_flow_below_limit:
 		_request_more_flow()
 
-func _handle_backflow() -> void:
+func _on_overflow() -> void:
 	print("source overflow by %s units/s" % extra_flow_rate)
 	var index := -1
 	for i in connections.size():

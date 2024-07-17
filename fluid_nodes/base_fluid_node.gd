@@ -32,7 +32,7 @@ var current_flow_rate := 0.0
 var extra_flow_rate := 0.0
 
 func _ready() -> void:
-	reached_capacity.connect(_handle_backflow)
+	reached_capacity.connect(_on_overflow)
 
 var is_queued := false
 func queue_update() -> void:
@@ -199,7 +199,7 @@ func _update() -> void:
 	if output_flow_below_limit:
 		_request_more_flow()
 	
-func _handle_backflow() -> void:
+func _on_overflow() -> void:
 	var inflowing_flow_pressure := 0.0
 	var inflowing_source_pressure := 0.0
 	for i in blocked_connection_index: # input connections
