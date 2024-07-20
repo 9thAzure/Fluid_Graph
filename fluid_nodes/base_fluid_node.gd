@@ -132,14 +132,31 @@ func is_input_restricting_flow() -> bool:
 			return true
 	return false
 
-func _process(delta: float) -> void:
-	if stored_amount >= capacity:
+func _process(delta : float) -> void:
+	process_extra_flow(delta)
+
+func process_extra_flow(delta : float) -> void:
+	if is_zero_approx(extra_flow_rate):
+		return
+
+	if extra_flow_rate > 0.0:
+		if stored_amount >= capacity:
+			return
+
+		stored_amount += extra_flow_rate * delta
+		if stored_amount >= capacity:
+			stored_amount = capacity
+			reached_capacity.emit()
+		return
+
+	if stored_amount <= 0.0:
 		return
 
 	stored_amount += extra_flow_rate * delta
-	if stored_amount > capacity:
-		stored_amount = capacity
-		reached_capacity.emit()
+	if stored_amount <= 0:
+		stored_amount = 0
+		# TODO: emit some equivalent to signal 'reached_capacity'.
+	return
 
 
 func update() -> void:
