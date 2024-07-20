@@ -15,7 +15,7 @@ script = ExtResource("1_72wvv")
 self_modulate = Color(0, 1, 1, 1)
 position = Vector2(133, 127)
 script = ExtResource("2_gaqfc")
-production_rate = 500.0
+production_rate = 100.0
 
 [node name="BaseRouter" type="Node2D" parent="FluidGraph"]
 position = Vector2(279, 129)

@@ -185,8 +185,7 @@ func _update_inputs() -> void:
 	
 func _update_outputs() -> void:
 	var size := connections.size()
-	var input_restricts_flow := is_input_restricting_flow()
-	var output_flow_below_limit := false
+	var deficit_flow_rate := 0.0
 	var flow_rate := current_flow_rate
 	var split_flow_pressure := current_flow_pressure / (size - output_connection_index)
 	var split_source_pressure := current_source_pressure / (size - output_connection_index)
@@ -200,16 +199,18 @@ func _update_outputs() -> void:
 		if split_flow_rate > connection.allowed_flow_rate:
 			connection.flow_pressure += split_flow_rate - connection.allowed_flow_rate
 			split_flow_rate = connection.allowed_flow_rate
-		elif input_restricts_flow and split_flow_rate < connection.allowed_flow_rate:
-			output_flow_below_limit = true
+		elif split_flow_rate < connection.allowed_flow_rate:
+			deficit_flow_rate += connection.allowed_flow_rate - split_flow_rate
 		
 		connection.set_relative_flow_rate(self, split_flow_rate)
 		flow_rate -= split_flow_rate
 		connection.queue_update_connected_node(self)
 
-	extra_flow_rate = flow_rate
+	extra_flow_rate = flow_rate - deficit_flow_rate
+	if not is_zero_approx(flow_rate) and not is_zero_approx(deficit_flow_rate):
+		printerr("%s | %s" % [flow_rate, deficit_flow_rate])
 	
-	if output_flow_below_limit:
+	if deficit_flow_rate > 0.0 and is_input_restricting_flow():
 		_request_more_flow()
 	
 func _on_overflow() -> void:
