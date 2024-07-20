@@ -56,6 +56,9 @@ func get_connecting_node(source_node : BaseFluidNode) -> BaseFluidNode:
 	assert(is_same(source_node, node2))
 	return node1
 
+func queue_update_connected_node(source_node : BaseFluidNode) -> void:
+	get_connecting_node(source_node).queue_update()
+
 func get_relative_flow_rate(source_node : BaseFluidNode) -> float:
 	if is_same(source_node, node1):
 		return flow_rate
