@@ -36,6 +36,9 @@ var current_source_pressure := 0.0
 
 func _ready() -> void:
 	reached_capacity.connect(_on_overflow)
+	var meter := preload("res://fluid_nodes/drawers/capacity/storage_display.tscn").instantiate()
+	meter.fluid_node = self
+	add_child(meter)
 
 var is_queued := false
 func queue_update() -> void:
