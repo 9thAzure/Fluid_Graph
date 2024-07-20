@@ -9,6 +9,7 @@
 [node name="Main2" type="Node2D"]
 
 [node name="FluidGraph" type="Node2D" parent="."]
+scale = Vector2(1.995, 1.995)
 script = ExtResource("1_72wvv")
 
 [node name="BaseProducer" type="Node2D" parent="FluidGraph"]

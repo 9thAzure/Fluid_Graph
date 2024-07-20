@@ -201,6 +201,7 @@ func _update_inputs() -> void:
 		current_source_pressure += connection.source_pressure
 	
 func _update_outputs() -> void:
+	# TODO: convert extra_current_pressure into source_pressure, such that flow_rate + flow_pressure <= max_flow_rate is true. This simplifies '_request_more_flow'
 	var size := connections.size()
 	var deficit_flow_rate := 0.0
 	var flow_rate := current_flow_rate
@@ -261,12 +262,39 @@ func _on_overflow() -> void:
 		connection.flow_pressure = pressure - connection.allowed_flow_rate
 		connection.queue_update_connected_node(self)
 
+func get_effective_current_flow_pressure() -> float:
+	if is_zero_approx(current_flow_pressure):
+		return 0
+
+	var effective_current_flow_pressure := 0.0
+	for i in blocked_connection_index:
+		var connection := connections[i]
+		effective_current_flow_pressure += connection.flow_pressure
+
+		var extra_pressure := absf(connection.flow_rate) + connection.flow_pressure - connection.max_flow_rate
+		if extra_pressure > 0:
+			effective_current_flow_pressure += connection.flow_pressure - extra_pressure
+
+	return effective_current_flow_pressure
+
+
 func _request_more_flow() -> void:
-	# TODO: reimplement better, by knowing amount to reduce allowed_flow_rate by.
+	assert(extra_flow_rate < 0)
+	var effective_current_flow_pressure := get_effective_current_flow_pressure()
+	if is_zero_approx(effective_current_flow_pressure):
+		return
+	
+	var pressure_to_flow_proportion := minf(-extra_flow_rate / effective_current_flow_pressure, 1)
 	for i in blocked_connection_index: # input connections
 		var connection := connections[i]
-		if connection.get_relative_flow_rate(self) > 0 or is_equal_approx(connection.allowed_flow_rate, connection.max_flow_rate):
-			continue
-		
-		connection.reset_allowed_flow_rate()
+		var effective_flow_pressure := connection.flow_pressure
+		var extra_pressure := absf(connection.flow_rate) + connection.flow_pressure - connection.max_flow_rate
+		if extra_pressure > 0:
+			effective_flow_pressure -= extra_pressure
+
+		connection.allowed_flow_rate += effective_flow_pressure * pressure_to_flow_proportion
+		if connection.allowed_flow_rate > connection.max_flow_rate:
+			printerr("allowed_flow_rate has exceeded max_flow_rate")
+			connection.reset_allowed_flow_rate()
+
 		connection.queue_update_connected_node(self)
