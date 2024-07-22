@@ -2,6 +2,8 @@
 extends Node2D
 class_name FluidConnection
 
+# All values should be positive, and flow from node1 to node2.
+
 @export
 var node1 : BaseFluidNode = null:
 	set(value):
@@ -28,7 +30,6 @@ func change_connection(old_node : BaseFluidNode, new_node : BaseFluidNode) -> vo
 @export
 var max_flow_rate := 100.0
 
-# from node1 to node2, negative values indicate flows from node2 to node1.
 var flow_rate := 0.0
 
 var allowed_flow_rate := 0.0
@@ -46,8 +47,26 @@ func reset_allowed_flow_rate() -> void:
 func is_allowed_flow_rate_default() -> bool:
 	return is_equal_approx(allowed_flow_rate, max_flow_rate)
 
+func swap_direction() -> void:
+	var temp := node1
+	node1 = node2
+	node2 = temp
+
+func is_input_connection(source_node : BaseFluidNode) -> bool:
+	return is_same(source_node, node1)
+
+func is_blocked_connection() -> bool:
+	return is_zero_approx(allowed_flow_rate)
+
 func is_complete() -> bool:
 	return node1 != null and node2 != null
+
+func flow_multiplier(source_node: BaseFluidNode) -> int:
+	if is_same(source_node, node1):
+		return 1
+	
+	assert(is_same(source_node, node2))
+	return -1
 
 func get_connecting_node(source_node : BaseFluidNode) -> BaseFluidNode:
 	if is_same(source_node, node1):
@@ -60,34 +79,13 @@ func queue_update_connected_node(source_node : BaseFluidNode) -> void:
 	get_connecting_node(source_node).queue_update()
 
 func get_relative_flow_rate(source_node : BaseFluidNode) -> float:
-	if is_same(source_node, node1):
-		return flow_rate
-	
-	assert(is_same(source_node, node2))
-	return -flow_rate
+	return flow_rate * flow_multiplier(source_node)
 
 func set_relative_flow_rate(source_node : BaseFluidNode, value : float) -> void:
-	if is_same(source_node, node1):
-		flow_rate = value
-		return
-	
-	assert(is_same(source_node, node2))
-	flow_rate = -value
-
-func get_relative_pressure(source_node : BaseFluidNode) -> float:
-	if is_same(source_node, node1):
-		return flow_pressure
-	
-	assert(is_same(source_node, node2))
-	return -flow_pressure
-
-func set_relative_pressure(source_node : BaseFluidNode, value : float) -> void:
-	if is_same(source_node, node1):
-		flow_pressure = value
-		return
-	
-	assert(is_same(source_node, node2))
-	flow_pressure = -value
+	flow_rate = value * flow_multiplier(source_node)
+	if flow_rate < 0:
+		flow_rate = -flow_rate
+		swap_direction()
 
 func _draw() -> void:
 	if not is_complete():
