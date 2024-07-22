@@ -55,39 +55,24 @@ func queue_update() -> void:
 	update()
 
 # functions have to be sorted first input, then output
-#  input: ingoing flow rate (- relative flow)
+#  input: 
 #    - has to further be sorted from largest relative pressure to smallest relative pressure
-#  blocked (allowed_flow_rate == 0):
-#    - further sorted by pressure, largest to smallest (like inputs)
-#    - this has overlap with both other types of connections
-#  output: other flow rate
+#  output: 
 #    - further sorted from Smallest allowed flow to largest
 
 # if true, a and b is sorted
 func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bool:
-	var flow_rate_a := a.get_relative_flow_rate(self)
-	var flow_rate_b := b.get_relative_flow_rate(self)
+	var a_is_input := a.is_input_connection(self)
+	var b_is_input := b.is_input_connection(self)
 
-	var connection_type_a := get_connection_type(a)
-	var connection_type_b := get_connection_type(b)
+	if a_is_input != b_is_input:
+		return a_is_input
 
-	if connection_type_a != connection_type_b:
-		return connection_type_a < connection_type_b
-
-	# both connections are the same type here.
-	if connection_type_a == 2: # output connection
-		return a.allowed_flow_rate < b.allowed_flow_rate
-
-	return (-flow_rate_a + a.flow_pressure + a.source_pressure) > (-flow_rate_b + b.flow_pressure + b.source_pressure) # ingoing flow rates are negative
-
-
-# 0 = input connection, 1 = blocked connection, 2 = output connection.
-func get_connection_type(connection : FluidConnection) -> int:
-	if connection.get_relative_flow_rate(self) < 0:
-		return 0
-	elif is_zero_approx(connection.allowed_flow_rate):
-		return 1
-	return 2
+	if a_is_input: # and b_is_input
+		return a.flow_rate + a.flow_pressure + a.source_pressure > b.flow_rate + b.flow_pressure + b.source_pressure
+	
+	# a and b are output connections
+	return a.allowed_flow_rate < b.allowed_flow_rate
 
 func sort_connections() -> void:
 	connections.sort_custom(_custom_connection_comparer)
