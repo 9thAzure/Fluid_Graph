@@ -155,6 +155,7 @@ func process_extra_flow(delta : float) -> void:
 	stored_amount += extra_flow_rate * delta
 	if stored_amount <= 0:
 		stored_amount = 0
+		queue_update()
 		# TODO: emit some equivalent to signal 'reached_capacity'.
 	return
 
@@ -228,8 +229,10 @@ func _update_outputs() -> void:
 	if not is_zero_approx(flow_rate) and not is_zero_approx(deficit_flow_rate):
 		printerr("%s | %s" % [flow_rate, deficit_flow_rate])
 	
-	if deficit_flow_rate > 0.0 and is_input_restricting_flow():
-		_request_more_flow()
+	if deficit_flow_rate > 0.0:
+		drain_storage()
+		if is_input_restricting_flow():
+			_request_more_flow()
 	
 func _on_overflow() -> void:
 	# Try to override completely blocked flows, if their pressure is different from attempted pressure flow
@@ -277,6 +280,15 @@ func get_effective_current_flow_pressure() -> float:
 
 	return effective_current_flow_pressure
 
+func drain_storage() -> void:
+	assert(extra_flow_rate < 0)
+	if stored_amount <= 0:
+		return
+	
+	for i in connections.size() - output_connection_index:
+		var connection := connections[i + output_connection_index]
+		connection.flow_rate = connection.allowed_flow_rate
+		connection.queue_update_connected_node(self)
 
 func _request_more_flow() -> void:
 	assert(extra_flow_rate < 0)
