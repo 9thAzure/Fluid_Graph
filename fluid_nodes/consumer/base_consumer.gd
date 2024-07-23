@@ -33,4 +33,20 @@ func _update() -> void:
 			efficiency = inflowing_rate / consumption_rate
 		_request_more_flow()
 		return
+	elif extra_flow_rate > 0:
+		deal_with_extra_flow()
+
+func _storage_flow_sort(a : FluidConnection, b : FluidConnection) -> bool:
+	var node_a := a.get_connecting_node(self)
+	var node_b := b.get_connecting_node(self)
+
+	if not is_equal_approx(node_a.stored_amount, node_b.stored_amount):
+		return node_a.stored_amount > node_b.stored_amount
 	
+	# we subtract to ignore the deficit flow rate from the connections to this node, since we're ignoring it.
+	var deficit_a := node_a.extra_flow_rate + (a.allowed_flow_rate - a.flow_rate)
+	var deficit_b := node_b.extra_flow_rate + (b.allowed_flow_rate - b.flow_rate)
+	return deficit_a > deficit_b
+
+func deal_with_extra_flow() -> void:
+	connections.sort_custom(_storage_flow_sort)
