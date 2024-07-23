@@ -15,8 +15,7 @@ func _init() -> void:
 	self_modulate = Color.RED
 
 func _update() -> void:
-	blocked_connection_index = connections.size()
-	output_connection_index = blocked_connection_index
+	output_connection_index = connections.size()
 	var inflowing_rate := 0.0
 	for connection in connections:
 		var flow_rate = -connection.get_relative_flow_rate(self)

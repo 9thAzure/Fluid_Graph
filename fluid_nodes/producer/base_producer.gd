@@ -15,14 +15,14 @@ func _init() -> void:
 
 func _update_inputs() -> void:
 	var size := connections.size()
-	for i in blocked_connection_index:
+	for i in output_connection_index:
 		var connection := connections[i]
-		var divider := size - (output_connection_index - blocked_connection_index) - i
+		var divider := size - (output_connection_index - output_connection_index) - i
 		var split_total_pressure := (production_rate + current_flow_pressure + current_source_pressure) / divider
 
 		var total_ingoing_pressure := absf(connection.flow_rate) + connection.source_pressure + connection.flow_pressure
 		if total_ingoing_pressure < split_total_pressure:
-			push_back_overridden_flows(i, blocked_connection_index - i)
+			push_back_overridden_flows(i, output_connection_index - i)
 			break
 
 		connection.flow_pressure += absf(connection.flow_rate)
@@ -30,7 +30,7 @@ func _update_inputs() -> void:
 		connection.allowed_flow_rate = 0
 		connection.queue_update_connected_node(self)
 
-	blocked_connection_index = 0
+	output_connection_index = 0
 	assert(is_equal_approx(current_flow_rate, production_rate), "production_rate (%s) different from current_flow_rate (%s) | difference: %s" % [production_rate, current_flow_rate, production_rate - current_flow_rate]) 
 
 func _on_overflow() -> void:
