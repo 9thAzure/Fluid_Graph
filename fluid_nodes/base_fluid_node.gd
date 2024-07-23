@@ -269,6 +269,7 @@ func _request_more_flow() -> void:
 		return
 	
 	var pressure_to_flow_proportion := minf(-extra_flow_rate / effective_current_flow_pressure, 1)
+	var deficit_to_remove := -extra_flow_rate
 	for i in output_connection_index: # input connections
 		var connection := connections[i]
 		var effective_flow_pressure := connection.flow_pressure
@@ -276,9 +277,29 @@ func _request_more_flow() -> void:
 		if extra_pressure > 0:
 			effective_flow_pressure -= extra_pressure
 
-		connection.allowed_flow_rate += effective_flow_pressure * pressure_to_flow_proportion
+		var increase := effective_flow_pressure * pressure_to_flow_proportion
+		connection.allowed_flow_rate += increase
+		deficit_to_remove -= increase
 		if connection.allowed_flow_rate > connection.max_flow_rate:
 			printerr("allowed_flow_rate has exceeded max_flow_rate")
 			connection.reset_allowed_flow_rate()
 
 		connection.queue_update_connected_node(self)
+	
+	if is_zero_approx(deficit_to_remove):
+		return
+	
+	for i in output_connection_index:
+		var connection := connections[i]
+		var split_deficit_to_remove := deficit_to_remove / (output_connection_index - i)
+		if connection.allowed_flow_rate + split_deficit_to_remove > connection.max_flow_rate:
+			deficit_to_remove -= connection.max_flow_rate - connection.allowed_flow_rate
+			connection.reset_allowed_flow_rate()
+			continue
+		
+		connection.allowed_flow_rate += split_deficit_to_remove
+		deficit_to_remove -= split_deficit_to_remove
+	
+	if not is_zero_approx(deficit_to_remove):
+		print("unable to appropriately allow enough flow")
+		
