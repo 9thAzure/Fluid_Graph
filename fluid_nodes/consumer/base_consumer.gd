@@ -29,7 +29,8 @@ func _update() -> void:
 	efficiency = 1.0
 	extra_flow_rate = inflowing_rate - consumption_rate
 	if inflowing_rate < consumption_rate:
-		efficiency = inflowing_rate / consumption_rate
+		if is_zero_approx(stored_amount):
+			efficiency = inflowing_rate / consumption_rate
 		_request_more_flow()
 		return
 	

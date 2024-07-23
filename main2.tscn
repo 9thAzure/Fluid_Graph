@@ -24,7 +24,7 @@ capacity = 50
 position = Vector2(279, 129)
 script = ExtResource("3_t3sii")
 node_size = null
-capacity = 150
+capacity = 50
 
 [node name="BaseConsumer" type="Node2D" parent="FluidGraph"]
 self_modulate = Color(1, 0, 0, 1)
