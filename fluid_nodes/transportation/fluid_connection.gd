@@ -53,7 +53,7 @@ func swap_direction() -> void:
 	node2 = temp
 
 func is_input_connection(source_node : BaseFluidNode) -> bool:
-	return is_same(source_node, node1)
+	return is_same(source_node, node2)
 
 func is_blocked_connection() -> bool:
 	return is_zero_approx(allowed_flow_rate)
