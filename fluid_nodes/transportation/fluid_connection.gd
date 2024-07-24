@@ -24,8 +24,10 @@ func change_connection(old_node : BaseFluidNode, new_node : BaseFluidNode) -> vo
 
 	if old_node != null:
 		old_node.connections.erase(self)
+		old_node.updated.disconnect(conditions_changed)
 	if new_node != null:
 		new_node.connections.append(self)
+		new_node.updated.connect(conditions_changed)
 
 @export
 var max_flow_rate := 100.0
@@ -40,6 +42,13 @@ var source_pressure := 0.0
 
 func _ready() -> void:
 	reset_allowed_flow_rate()
+	set_process(false)
+
+func conditions_changed() -> void:
+	pass
+
+func _process(_delta: float) -> void:
+	pass
 
 func reset_allowed_flow_rate() -> void:
 	allowed_flow_rate = max_flow_rate
