@@ -38,6 +38,7 @@ func _ready() -> void:
 	meter.fluid_node = self
 	add_child(meter)
 
+signal updated()
 var is_queued := false
 func queue_update() -> void:
 	if is_queued:
@@ -51,6 +52,7 @@ func queue_update() -> void:
 		return # this means the method was called already during the delay time.
 	is_queued = false
 	update()
+	updated.emit()
 
 # functions have to be sorted first input, then output
 #  input: 
