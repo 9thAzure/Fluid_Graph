@@ -5,6 +5,9 @@ var producers : Array[BaseProducer] = []
 var consumers : Array[BaseConsumer] = []
 var routers : Array[BaseRouter] = []
 
+@export_range(0, 10, 0.01, "or_greater", "hide_slider")
+var amount_difference_to_pressure := 1.0
+
 # Debug testing tools
 signal fluid_update()
 
