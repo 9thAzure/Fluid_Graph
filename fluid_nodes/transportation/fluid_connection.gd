@@ -45,7 +45,35 @@ func _ready() -> void:
 	set_process(false)
 
 func conditions_changed() -> void:
-	pass
+	var input_extra_flow := node1.extra_flow_rate
+	var input_stored := node1.stored_amount
+	var input_at_capacity := is_equal_approx(node1.stored_amount, node1.capacity)
+	var output_extra_flow := node2.extra_flow_rate
+	var output_stored := node2.stored_amount
+	var output_at_capacity := is_equal_approx(node2.stored_amount, node2.capacity)
+
+	if not is_equal_approx(input_stored, output_stored):
+		if input_stored > output_stored:
+			# try to pump more into output
+			reset_allowed_flow_rate()
+			node1.queue_update()
+			return
+		
+		# ! This likely requires a rework of flow overriding
+		# output_stored < input_stored
+		# swap direction	
+		# queue new input for update
+		
+		pass
+	# if is_equal_approx(node2.stored_amount, node2.capacity):
+	# 	if not is_zero_approx(allowed_flow_rate):
+	# 		allowed_flow_rate = 0
+	# 		flow_pressure += flow_rate
+	# 		flow_rate = 0
+	# 		node1.queue_update()
+	# 	return
+	
+
 
 func _process(_delta: float) -> void:
 	pass
