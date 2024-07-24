@@ -18,6 +18,9 @@ var capacity :=  500
 
 var stored_amount := 0.0
 
+func get_filled_percentage() -> float:
+	return stored_amount / capacity
+
 var extra_flow_rate := 0.0
 
 ## Emitted when stored liquid has met capacity.
@@ -56,7 +59,7 @@ func queue_update() -> void:
 
 # functions have to be sorted first input, then output
 #  input: 
-#    - has to further be sorted from largest relative pressure to smallest relative pressure
+#    - further sorted by the connected node's stored amount proportion, from largest to smallest.
 #  output: 
 #    - further sorted from Smallest allowed flow to largest
 
@@ -69,7 +72,7 @@ func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bo
 		return a_is_input
 
 	if a_is_input: # and b_is_input
-		return a.flow_rate + a.flow_pressure + a.source_pressure > b.flow_rate + b.flow_pressure + b.source_pressure
+		return a.get_connecting_node(self).get_filled_percentage() > b.get_connecting_node(self).get_filled_percentage()
 	
 	# a and b are output connections
 	return a.allowed_flow_rate < b.allowed_flow_rate
