@@ -195,8 +195,8 @@ func _update_outputs() -> void:
 	stabilize_input_flows()
 	if deficit_flow_rate > 0.0:
 		drain_storage()
-		if is_input_restricting_flow():
-			_request_more_flow()
+		# if is_input_restricting_flow():
+		# 	_request_more_flow()
 
 func stabilize_input_flows() -> void:
 	for i in output_connection_index: # input_connections

@@ -37,7 +37,7 @@ func _handle_outputs() -> void:
 	if extra_flow_rate < 0:
 		if is_zero_approx(stored_amount):
 			efficiency = 1 - -extra_flow_rate / consumption_rate
-		_request_more_flow()
+		# _request_more_flow()
 
 # from excess flow to deficit flow
 # func _storage_flow_sort(a : FluidConnection, b : FluidConnection) -> bool:

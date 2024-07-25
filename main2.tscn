@@ -12,19 +12,21 @@
 scale = Vector2(1.995, 1.995)
 script = ExtResource("1_72wvv")
 
-[node name="BaseProducer" type="Node2D" parent="FluidGraph"]
+[node name="BaseProducer" type="Node2D" parent="FluidGraph" node_paths=PackedStringArray("connections")]
 self_modulate = Color(0, 1, 1, 1)
 position = Vector2(133, 127)
 script = ExtResource("2_gaqfc")
-production_rate = 50.0
-node_size = null
+production_rate = 75.0
+node_size = 10.0
 capacity = 50
+connections = []
 
-[node name="BaseRouter" type="Node2D" parent="FluidGraph"]
+[node name="BaseRouter" type="Node2D" parent="FluidGraph" node_paths=PackedStringArray("connections")]
 position = Vector2(279, 129)
 script = ExtResource("3_t3sii")
-node_size = null
+node_size = 10.0
 capacity = 50
+connections = []
 
 [node name="BaseConsumer" type="Node2D" parent="FluidGraph"]
 self_modulate = Color(1, 0, 0, 1)
