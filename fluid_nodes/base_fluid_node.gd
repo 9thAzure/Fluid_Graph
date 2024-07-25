@@ -23,6 +23,9 @@ func get_filled_percentage() -> float:
 
 var extra_flow_rate := 0.0
 
+func get_extra_flow_proportion() -> float:
+	return extra_flow_rate / capacity
+
 ## Emitted when stored liquid has met capacity.
 signal reached_capacity()
 
@@ -189,11 +192,39 @@ func _update_outputs() -> void:
 	if not is_zero_approx(flow_rate) and not is_zero_approx(deficit_flow_rate):
 		printerr("%s | %s" % [flow_rate, deficit_flow_rate])
 	
+	stabilize_input_flows()
 	if deficit_flow_rate > 0.0:
 		drain_storage()
 		if is_input_restricting_flow():
 			_request_more_flow()
-	
+
+func stabilize_input_flows() -> void:
+	for i in output_connection_index: # input_connections
+		var connection := connections[i]
+		var input_node := connection.get_connecting_node(self)
+		var filled_proportion := input_node.get_filled_percentage()
+		var percent_flow_difference := input_node.get_extra_flow_proportion() - get_extra_flow_proportion()
+		if is_equal_approx(filled_proportion, get_filled_percentage()):
+			if is_zero_approx(percent_flow_difference):
+				continue
+			
+			var total_percent_increase := (extra_flow_rate + input_node.extra_flow_rate) / (capacity + input_node.capacity)
+			var new_allowed_flow_rate := connection.allowed_flow_rate + input_node.extra_flow_rate - total_percent_increase * input_node.capacity
+			if new_allowed_flow_rate > connection.max_flow_rate:
+				new_allowed_flow_rate = connection.max_flow_rate
+			elif new_allowed_flow_rate < 0:
+				new_allowed_flow_rate = 0
+
+			if is_equal_approx(new_allowed_flow_rate, connection.allowed_flow_rate):
+				continue
+			
+			connection.allowed_flow_rate = new_allowed_flow_rate
+			input_node.queue_update()
+			continue
+		
+		assert(filled_proportion > get_filled_percentage())
+		connection.reset_allowed_flow_rate()
+
 func _on_overflow() -> void:
 	# Try to override completely blocked flows, if their pressure is different from attempted pressure flow
 	# that's just extra_flow_rate
