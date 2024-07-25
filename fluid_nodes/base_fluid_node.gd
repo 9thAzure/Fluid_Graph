@@ -148,32 +148,16 @@ func _update() -> void:
 	_update_outputs()
 
 func _update_inputs() -> void:
-	var size := connections.size()
 	current_flow_rate = 0
 	current_flow_pressure = 0
 	current_source_pressure = 0
 	for i in output_connection_index: # input_connections
 		var connection := connections[i]
-		var divider := size - (output_connection_index) - i
-		var split_flow_rate := current_flow_rate / divider
-		var split_pressure := split_flow_rate + current_flow_pressure / divider + current_source_pressure / divider
-
-		var ingoing_flow_rate := -connection.get_relative_flow_rate(self)
-		var ingoing_pressure := ingoing_flow_rate + connection.flow_pressure + connection.source_pressure
-		if ingoing_pressure < split_pressure:
-			var length := output_connection_index - i
-			push_back_overridden_flows(i, length)
+		if connection.get_connecting_node(self).get_filled_percentage() < get_filled_percentage():
+			push_back_overridden_flows(i, output_connection_index - i)
 			break
 		
-		# TODO: not sure how to do parallel flows, don't think this works.
-		if is_equal_approx(ingoing_pressure, split_pressure):
-			connection.flow_pressure += abs(connection.flow_rate)
-			connection.flow_rate = 0
-			connection.allowed_flow_rate = 0
-			connection.queue_update_connected_node(self)
-			continue
-
-		current_flow_rate += ingoing_flow_rate 
+		current_flow_rate += connection.flow_rate 
 		current_flow_pressure += connection.flow_pressure
 		current_source_pressure += connection.source_pressure
 	
