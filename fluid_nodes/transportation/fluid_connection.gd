@@ -45,6 +45,8 @@ func _ready() -> void:
 	set_process(false)
 
 func conditions_changed() -> void:
+	return
+
 	var input_extra_flow := node1.extra_flow_rate
 	var input_stored := node1.stored_amount
 	var input_at_capacity := is_equal_approx(node1.stored_amount, node1.capacity)
