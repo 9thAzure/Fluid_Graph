@@ -223,7 +223,9 @@ func stabilize_input_flows() -> void:
 			continue
 		
 		assert(filled_proportion > get_filled_percentage())
-		connection.reset_allowed_flow_rate()
+		if percent_flow_difference > 0 and not is_equal_approx(connection.allowed_flow_rate, connection.max_flow_rate):
+			connection.reset_allowed_flow_rate()
+			input_node.queue_update()
 
 func _on_overflow() -> void:
 	# Try to override completely blocked flows, if their pressure is different from attempted pressure flow
