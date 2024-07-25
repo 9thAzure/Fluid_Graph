@@ -39,8 +39,6 @@ self_modulate = Color(1, 0, 0, 1)
 position = Vector2(357, 93)
 script = ExtResource("4_spv6l")
 consumption_rate = 10.0
-node_size = null
-capacity = null
 
 [node name="FluidConnection" parent="FluidGraph" node_paths=PackedStringArray("node2") instance=ExtResource("5_mij2a")]
 node2 = NodePath("../BaseRouter")
@@ -96,8 +94,6 @@ self_modulate = Color(1, 0, 0, 1)
 position = Vector2(357, 93)
 script = ExtResource("4_spv6l")
 consumption_rate = 2.0
-node_size = null
-capacity = null
 
 [node name="FluidConnection" parent="FluidGraph2" node_paths=PackedStringArray("node2") instance=ExtResource("5_mij2a")]
 node2 = NodePath("../BaseRouter")
@@ -160,16 +156,12 @@ self_modulate = Color(1, 0, 0, 1)
 position = Vector2(311, -33)
 script = ExtResource("4_spv6l")
 consumption_rate = 4.0
-node_size = null
-capacity = null
 
 [node name="BaseConsumer2" type="Node2D" parent="FluidGraph3"]
 self_modulate = Color(1, 0, 0, 1)
 position = Vector2(475, 52)
 script = ExtResource("4_spv6l")
 consumption_rate = 6.0
-node_size = null
-capacity = null
 
 [node name="FluidConnection" parent="FluidGraph3" node_paths=PackedStringArray("node1", "node2") instance=ExtResource("5_mij2a")]
 node1 = NodePath("../BaseProducer")
@@ -237,8 +229,6 @@ self_modulate = Color(1, 0, 0, 1)
 position = Vector2(357, 93)
 script = ExtResource("4_spv6l")
 consumption_rate = 55.0
-node_size = null
-capacity = null
 
 [node name="FluidConnection" parent="FluidGraph4" node_paths=PackedStringArray("node2") instance=ExtResource("5_mij2a")]
 node2 = NodePath("../BaseRouter")

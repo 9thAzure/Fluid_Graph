@@ -44,16 +44,12 @@ self_modulate = Color(1, 0, 0, 1)
 position = Vector2(291, 43)
 script = ExtResource("4_s4tv2")
 consumption_rate = 7.0
-node_size = null
-capacity = null
 
 [node name="BaseConsumer2" type="Node2D" parent="FluidGraph"]
 self_modulate = Color(1, 0, 0, 1)
 position = Vector2(291, 129)
 script = ExtResource("4_s4tv2")
 consumption_rate = 10.0
-node_size = null
-capacity = null
 
 [node name="FluidConnection" parent="FluidGraph" node_paths=PackedStringArray("node2") instance=ExtResource("5_t77b8")]
 node2 = NodePath("../BaseRouter")
