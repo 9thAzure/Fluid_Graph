@@ -60,32 +60,28 @@ func queue_update() -> void:
 	update()
 	updated.emit()
 
-# functions have to be sorted first input, then output
-#  input: 
-#    - further sorted by the connected node's stored amount proportion, from largest to smallest.
-#  output: 
-#    - further sorted from Smallest allowed flow to largest
+# sorted from largest to smallest proportional extra flow rate
 
 # if true, a and b is sorted
 func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bool:
-	var a_is_input := a.is_input_connection(self)
-	var b_is_input := b.is_input_connection(self)
-
-	if a_is_input != b_is_input:
-		return a_is_input
-
-	if a_is_input: # and b_is_input
-		return a.get_connecting_node(self).get_filled_percentage() > b.get_connecting_node(self).get_filled_percentage()
+	var extra_flow_a := a.get_connecting_node(self).get_extra_flow_proportion()
+	var extra_flow_b := b.get_connecting_node(self).get_extra_flow_proportion()
+	if is_equal_approx(extra_flow_a, extra_flow_b):
+		# input - output  -> true - true (negated)
+		# output - output -> false - true
+		# input - input   -> true - false
+		# output - input  -> false - false
+		return a.is_input_connection(self) or not b.is_input_connection(self)
 	
-	# a and b are output connections
-	return a.allowed_flow_rate < b.allowed_flow_rate
+	return extra_flow_a > extra_flow_b
 
 func sort_connections() -> void:
 	connections.sort_custom(_custom_connection_comparer)
 	var size := connections.size()
 	output_connection_index = size
+	var extra_flow_proportion := get_extra_flow_proportion()
 	for i in size:
-		if not connections[i].is_input_connection(self):
+		if extra_flow_proportion < connections[i].get_connecting_node(self).get_extra_flow_proportion():
 			output_connection_index = i
 			break
 
