@@ -64,16 +64,7 @@ func queue_update() -> void:
 
 # if true, a and b is sorted
 func _custom_connection_comparer(a : FluidConnection, b : FluidConnection) -> bool:
-	var extra_flow_a := a.get_connecting_node(self).get_extra_flow_proportion()
-	var extra_flow_b := b.get_connecting_node(self).get_extra_flow_proportion()
-	if is_equal_approx(extra_flow_a, extra_flow_b):
-		# input - output  -> true - true (negated)
-		# output - output -> false - true
-		# input - input   -> true - false
-		# output - input  -> false - false
-		return a.is_input_connection(self) or not b.is_input_connection(self)
-	
-	return extra_flow_a > extra_flow_b
+	return a.get_extra_flow_proportion_without_this_connection(self) > b.get_extra_flow_proportion_without_this_connection(self)
 
 func sort_connections() -> void:
 	connections.sort_custom(_custom_connection_comparer)
@@ -81,7 +72,7 @@ func sort_connections() -> void:
 	output_connection_index = size
 	var extra_flow_proportion := get_extra_flow_proportion()
 	for i in size:
-		if extra_flow_proportion < connections[i].get_connecting_node(self).get_extra_flow_proportion():
+		if extra_flow_proportion < connections[i].get_extra_flow_proportion_without_this_connection(self):
 			output_connection_index = i
 			break
 
