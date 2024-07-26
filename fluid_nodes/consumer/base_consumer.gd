@@ -13,6 +13,7 @@ var efficiency := 1.0
 
 func _init() -> void:
 	self_modulate = Color.RED
+	extra_flow_rate = -consumption_rate
 
 # func _update() -> void:
 # 	# output_connection_index = connections.size()
