@@ -126,6 +126,10 @@ func set_relative_flow_rate(source_node : BaseFluidNode, value : float) -> void:
 		flow_rate = -flow_rate
 		swap_direction()
 
+func get_extra_flow_proportion_without_this_connection(source_node : BaseFluidNode) -> float:
+	var connected_node := get_connecting_node(source_node)
+	return (connected_node.extra_flow_rate + flow_rate * flow_multiplier(connected_node)) / connected_node.capacity
+
 func _draw() -> void:
 	if not is_complete():
 		return
